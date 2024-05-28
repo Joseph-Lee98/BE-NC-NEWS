@@ -1,9 +1,11 @@
 const express = require('express');
-const {getTopics} = require('./controllers/api.controllers');
+const {getTopics,getEndpoints} = require('./controllers/api.controllers');
 
 const app = express();
 
 app.get('/api/topics',getTopics);
+
+app.get('/api', getEndpoints)
 
 app.all('*',(req,res)=>{
     res.status(404).send({msg: 'Route not found'});
