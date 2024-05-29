@@ -7,6 +7,7 @@ exports.fetchTopics = () => {
     })
 }
 
+
 exports.fetchArticleById = (article_id) => {
     return db.query(`
     SELECT * FROM articles
@@ -21,3 +22,4 @@ exports.fetchArticleById = (article_id) => {
         return data.rows[0];
     })
 }
+

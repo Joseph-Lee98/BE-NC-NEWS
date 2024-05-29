@@ -4,11 +4,13 @@ const seed = require('../../db/seeds/seed');
 const request = require('supertest');
 const app = require('../../app');
 const endpoints = require('../../endpoints.json');
+
 const {
     convertTimestampToDate,
     createRef,
     formatComments,
   } = require('../../db/seeds/utils');
+
 
 
 beforeEach(()=>{
@@ -62,6 +64,7 @@ describe('/api',()=>{
             expect(body.msg).toBe('Route not found')
         })
     })
+
 })
 
 describe('/api/articles/:article_id',()=>{
@@ -108,4 +111,5 @@ describe('/api/articles/:article_id',()=>{
             expect(body.msg).toBe('Route not found')
         })
     })
+
 })
