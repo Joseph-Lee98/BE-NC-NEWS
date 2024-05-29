@@ -113,3 +113,41 @@ describe('/api/articles/:article_id',()=>{
     })
 
 })
+
+describe('/api/articles',()=>{
+    test('200: Should return 200 status code and correct array of article objects with comment_count property',()=>{
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({body})=>{
+            expect(body.articles).toHaveLength(data.articleData.length);
+            expect(body.articles).toBeSortedBy("created_at",{
+                descending: true
+            })
+            body.articles.forEach((article) => {
+                expect(article).toMatchObject({
+                    article_id: expect.any(Number),
+                    title: expect.any(String),
+                    author: expect.any(String),
+                    topic: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                    comment_count: expect.anything()
+                })
+                const comment_count = Number(article.comment_count);
+                expect(typeof comment_count).toBe('number');
+                expect(Number.isNaN(comment_count)).toBe(false);
+            }
+            )
+        })
+    })
+    test('404: should return 404 status code and correct message when endpoint is invalid',()=>{
+        return request(app)
+        .get('/api/articls')
+        .expect(404)
+        .then(({body})=>{
+            expect(body.msg).toBe('Route not found')
+        })
+    })
+})

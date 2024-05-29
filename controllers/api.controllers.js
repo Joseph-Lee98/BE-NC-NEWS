@@ -1,5 +1,5 @@
 
-const {fetchTopics,fetchArticleById} = require('../models/api.models');
+const {fetchTopics,fetchArticleById,fetchArticles} = require('../models/api.models');
 
 
 exports.getTopics = (req,res,next) => {
@@ -30,3 +30,10 @@ exports.getArticleById = (req,res,next) => {
     .catch(next)
 }
 
+exports.getArticles = (req,res,next) => {
+    fetchArticles()
+    .then((articles)=>{
+        res.status(200).send({articles})
+    })
+    .catch(next)
+}
