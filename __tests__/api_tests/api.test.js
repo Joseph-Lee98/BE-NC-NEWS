@@ -3,6 +3,7 @@ const db = require('../../db/connection');
 const seed = require('../../db/seeds/seed');
 const request = require('supertest');
 const app = require('../../app');
+const endpoints = require('../../endpoints.json');
 
 
 beforeEach(()=>{
@@ -45,14 +46,7 @@ describe('/api',()=>{
         .get('/api')
         .expect(200)
         .then(({body})=>{
-            for(let endpoint in body.endpoints){
-                expect(body.endpoints[endpoint]).toMatchObject({
-                    description: expect.any(String),
-                    queries: expect.any(Array),
-                    exampleResponse: expect.any(Object)
-                })
-            }
-
+            expect(body.endpoints).toEqual(endpoints)
         })
     })
     test('404: should return 404 status code and correct message when endpoint is invalid',()=>{
@@ -64,4 +58,3 @@ describe('/api',()=>{
         })
     })
 })
-
