@@ -1,22 +1,23 @@
 const db = require('../db/connection');
-const fs = require('fs/promises')
 
 exports.fetchTopics = () => {
     return db.query('SELECT * FROM topics')
     .then((data)=>{
         return data.rows
     })
-    .catch((err)=>{
-        throw new Error();
-    })
 }
 
-exports.fetchEndpoints = () => {
-    return fs.readFile('./endpoints.json','utf-8')
-    .then((endpoints)=>{
-        return JSON.parse(endpoints)
-    })
-    .catch((err)=>{
-        throw new Error();
+exports.fetchArticleById = (article_id) => {
+    return db.query(`
+    SELECT * FROM articles
+    WHERE article_id = $1
+    `,[article_id])
+    .then((data)=>{
+        if(data.rowCount===0){
+            const error = new Error('Not Found')
+            error.status=404
+            throw error
+        }
+        return data.rows[0];
     })
 }

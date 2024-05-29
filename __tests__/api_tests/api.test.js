@@ -3,6 +3,12 @@ const db = require('../../db/connection');
 const seed = require('../../db/seeds/seed');
 const request = require('supertest');
 const app = require('../../app');
+const endpoints = require('../../endpoints.json');
+const {
+    convertTimestampToDate,
+    createRef,
+    formatComments,
+  } = require('../../db/seeds/utils');
 
 
 beforeEach(()=>{
@@ -14,7 +20,7 @@ afterAll(()=>{
 })
 
 describe('/api/topics',()=>{
-    test('200: Should return 200 status code and correct message',()=>{
+    test('200: Should return 200 status code and correct message containing array of topic objects',()=>{
         return request(app)
         .get('/api/topics')
         .expect(200)
@@ -40,19 +46,12 @@ describe('/api/topics',()=>{
 })
 
 describe('/api',()=>{
-    test('200: Should return 200 status code and correct message',()=>{
+    test('200: Should return 200 status code and correct message containing object listing endpoints',()=>{
         return request(app)
         .get('/api')
         .expect(200)
         .then(({body})=>{
-            for(let endpoint in body.endpoints){
-                expect(body.endpoints[endpoint]).toMatchObject({
-                    description: expect.any(String),
-                    queries: expect.any(Array),
-                    exampleResponse: expect.any(Object)
-                })
-            }
-
+            expect(body.endpoints).toEqual(endpoints)
         })
     })
     test('404: should return 404 status code and correct message when endpoint is invalid',()=>{
@@ -65,3 +64,48 @@ describe('/api',()=>{
     })
 })
 
+describe('/api/articles/:article_id',()=>{
+    test('200: should return 200 status code and correct article',()=>{
+        return request(app)
+        .get('/api/articles/3')
+        .expect(200)
+        .then(({body})=>{
+            const articleWithDate = convertTimestampToDate(body.article);
+            expect(articleWithDate).toEqual({
+                title: "Eight pug gifs that remind me of mitch",
+                topic: "mitch",
+                author: "icellusedkars",
+                body: "some gifs",
+                created_at: new Date(1604394720000),
+                article_img_url:
+                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                article_id: 3,
+                votes: 0
+            })
+        })
+    })
+    test('400: Should return 400 status code and correct message when article_id parameter is invalid',()=>{
+        return request(app)
+        .get('/api/articles/banana')
+        .expect(400)
+        .then(({body})=>{
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test('404: Should return 404 status code and correct message when article_id parameter is valid but not found',()=>{
+        return request(app)
+        .get('/api/articles/50')
+        .expect(404)
+        .then(({body})=>{
+            expect(body.msg).toBe('Not Found')
+        })
+    })
+    test('404: should return 404 status code and correct message when endpoint is invalid',()=>{
+        return request(app)
+        .get('/api/articls/4')
+        .expect(404)
+        .then(({body})=>{
+            expect(body.msg).toBe('Route not found')
+        })
+    })
+})
