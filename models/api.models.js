@@ -1,5 +1,12 @@
 const db = require('../db/connection');
 
+const {
+    convertTimestampToDate,
+    createRef,
+    formatComments,
+    checkExists
+  } = require("../db/seeds/utils");
+
 exports.fetchTopics = () => {
     return db.query('SELECT * FROM topics')
     .then((data)=>{
@@ -34,5 +41,21 @@ exports.fetchArticles = () => {
     .then((articles)=>{
         return articles.rows
     })
-
 }
+
+exports.fetchCommentsByArticleId = (article_id) => {
+    return db.query(`
+    SELECT * FROM comments 
+    WHERE article_id = $1 
+    ORDER BY created_at DESC
+    `, [article_id])
+    .then((comments) => {
+        if (comments.rowCount === 0) {
+            return checkExists('articles', 'article_id', article_id)
+                .then(() => {
+                    return comments.rows
+                })   
+            }
+            return comments.rows;
+        });
+};
