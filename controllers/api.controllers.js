@@ -1,8 +1,6 @@
 
 const {fetchTopics,fetchArticleById} = require('../models/api.models');
 
-const {fetchTopics} = require('../models/api.models');
-
 
 exports.getTopics = (req,res,next) => {
     fetchTopics()
