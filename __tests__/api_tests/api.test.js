@@ -9,6 +9,7 @@ const {
     convertTimestampToDate,
     createRef,
     formatComments,
+    checkExists
   } = require('../../db/seeds/utils');
 
 
@@ -150,4 +151,65 @@ describe('/api/articles',()=>{
             expect(body.msg).toBe('Route not found')
         })
     })
+})
+
+describe('/api/articles/:article_id/comments',()=>{
+    test('200: should return 200 status code and array of comments where article id matches id passed in as parameter',()=>{
+        return request(app)
+        .get('/api/articles/3/comments')
+        .expect(200)
+        .then(({body})=>{
+            const commentIds = [];
+            expect(body.comments).toHaveLength(2)
+            expect(body.comments).toBeSortedBy("created_at",{
+                descending: true
+            })
+            body.comments.forEach((comment)=>{
+                commentIds.push(comment.comment_id)
+                expect(comment).toMatchObject({
+                    body: expect.any(String),
+                    votes: expect.any(Number),
+                    author: expect.any(String),
+                    article_id: expect.any(Number),
+                    created_at: expect.any(String),
+                    comment_id: expect.any(Number)
+                })
+            })
+            const sortedCommentIds = [...commentIds].sort()
+            expect(sortedCommentIds).toEqual([10,11])
+        })
+    })
+    test('200: should return 200 status code and an empty array when article id passed in has no comments',()=>{
+        return request(app)
+        .get('/api/articles/2/comments')
+        .expect(200)
+        .then(({body})=>{
+            expect(body.comments).toHaveLength(0)
+        })
+    })
+    test('400: Should return 400 status code and correct message when article_id parameter is invalid',()=>{
+        return request(app)
+        .get('/api/articles/banana/comments')
+        .expect(400)
+        .then(({body})=>{
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test('404: Should return 404 status code and correct message when article_id parameter is valid but not found',()=>{
+        return request(app)
+        .get('/api/articles/50/comments')
+        .expect(404)
+        .then(({body})=>{
+            expect(body.msg).toBe('Not Found')
+        })
+    })
+    test('404: should return 404 status code and correct message when endpoint is invalid',()=>{
+        return request(app)
+        .get('/api/articls/4')
+        .expect(404)
+        .then(({body})=>{
+            expect(body.msg).toBe('Route not found')
+        })
+    })
+
 })
