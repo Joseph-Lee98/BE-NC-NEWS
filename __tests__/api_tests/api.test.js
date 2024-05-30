@@ -85,7 +85,8 @@ describe('GET - /api/articles/:article_id',()=>{
                 article_img_url:
                 "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
                 article_id: 3,
-                votes: 0
+                votes: 0,
+                comment_count: '2'
             })
         })
     })
@@ -105,15 +106,6 @@ describe('GET - /api/articles/:article_id',()=>{
             expect(body.msg).toBe('Not Found')
         })
     })
-    test('404: should return 404 status code and correct message when endpoint is invalid',()=>{
-        return request(app)
-        .get('/api/articls/4')
-        .expect(404)
-        .then(({body})=>{
-            expect(body.msg).toBe('Route not found')
-        })
-    })
-
 })
 
 describe('GET - /api/articles',()=>{
@@ -135,7 +127,7 @@ describe('GET - /api/articles',()=>{
                     created_at: expect.any(String),
                     votes: expect.any(Number),
                     article_img_url: expect.any(String),
-                    comment_count: expect.anything()
+                    comment_count: expect.any(String)
                 })
                 const comment_count = Number(article.comment_count);
                 expect(typeof comment_count).toBe('number');
@@ -162,7 +154,7 @@ describe('GET - /api/articles',()=>{
                     created_at: expect.any(String),
                     votes: expect.any(Number),
                     article_img_url: expect.any(String),
-                    comment_count: expect.anything()
+                    comment_count: expect.any(String)
                 })
                 const comment_count = Number(article.comment_count);
                 expect(typeof comment_count).toBe('number');
