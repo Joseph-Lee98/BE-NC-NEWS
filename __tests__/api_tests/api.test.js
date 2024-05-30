@@ -377,3 +377,38 @@ describe('PATCH - /api/articles/:article_id',()=>{
         })
     })
 })
+
+describe('DELETE - /api/comments/:comment_id',()=>{
+    test('204: should return 204 status code and no response content for a successful deletion of a comment',()=>{
+        return request(app)
+        .delete('/api/comments/5')
+        .expect(204)
+        .then(({body})=>{
+            expect(body).toEqual({})
+        })
+    })
+    test('400: Should return 400 status code and correct message when comment_id is invalid',()=>{
+        return request(app)
+        .delete('/api/comments/banana')
+        .expect(400)
+        .then(({body})=>{
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test('404: Should return 404 status code and correct message when comment_id is valid but not found',()=>{
+        return request(app)
+        .delete('/api/comments/100')
+        .expect(404)
+        .then(({body})=>{
+            expect(body.msg).toBe('Not Found')
+        })
+    })
+    test('404: should return 404 status code and correct message when endpoint is invalid',()=>{
+        return request(app)
+        .delete('/api/commentss/4')
+        .expect(404)
+        .then(({body})=>{
+            expect(body.msg).toBe('Route not found')
+        })
+    })
+})
