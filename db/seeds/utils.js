@@ -34,3 +34,11 @@ exports.checkExists = async (table, column, value) => {
     throw error
   }
 };
+
+exports.validDataType = async(propertyType,value) => {
+  if(typeof value !== propertyType){
+    const error = new Error('Bad Request');
+    error.status = 400;
+    throw error
+  }
+}

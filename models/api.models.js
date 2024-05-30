@@ -4,7 +4,8 @@ const {
     convertTimestampToDate,
     createRef,
     formatComments,
-    checkExists
+    checkExists,
+    validDataType
   } = require("../db/seeds/utils");
 
 exports.fetchTopics = () => {
@@ -59,3 +60,28 @@ exports.fetchCommentsByArticleId = (article_id) => {
             return comments.rows;
         });
 };
+
+exports.createCommentByArticleId = (article_id,body) => {
+    return validDataType('string',body.username)
+    .then(()=>{
+    return validDataType('string',body.body)  
+    })
+    .then(()=>{
+    return checkExists('articles','article_id',article_id)
+    })
+    .then(()=>{
+    return checkExists('users','username',body.username)
+    })
+    .then(()=>{
+    return db.query(`
+    INSERT INTO comments
+    (body,article_id,author)
+    VALUES
+    ($1,$2,$3)
+    RETURNING *;
+    `,[body.body,article_id,body.username])
+    })  
+    .then((comment)=>{
+        return comment.rows[0]
+    })
+}
