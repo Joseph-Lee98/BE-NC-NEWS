@@ -17,22 +17,23 @@ exports.fetchTopics = () => {
 
 
 exports.fetchArticleById = (article_id) => {
+    return checkExists('articles','article_id',article_id)
+    .then(()=>{
     return db.query(`
-    SELECT * FROM articles
-    WHERE article_id = $1
+    SELECT articles.article_id, title, topic, articles.author, articles.body, articles.created_at, articles.votes, article_img_url, COUNT(comments.article_id) AS comment_count
+    FROM articles LEFT JOIN comments
+    ON articles.article_id = comments.article_id
+    WHERE articles.article_id = $1
+    GROUP BY articles.article_id, title, topic, articles.author, articles.body, articles.created_at, articles.votes, article_img_url
     `,[article_id])
+    })
     .then((data)=>{
-        if(data.rowCount===0){
-            const error = new Error('Not Found')
-            error.status=404
-            throw error
-        }
         return data.rows[0];
     })
 }
 
 exports.fetchArticles = (topic) => {
-    let queryStr = `SELECT articles.article_id, title, articles.author, topic, articles.created_at, articles.votes, article_img_url, SUM(COALESCE(comments.article_id,0)) AS comment_count
+    let queryStr = `SELECT articles.article_id, title, articles.author, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.article_id) AS comment_count
     FROM articles LEFT JOIN comments
     ON articles.article_id = comments.article_id `;
     const queryValues = [];
