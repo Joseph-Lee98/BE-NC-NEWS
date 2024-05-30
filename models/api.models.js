@@ -104,3 +104,18 @@ exports.updateArticleById = (article_id,body) => {
         return article.rows[0]
     })
 }
+
+exports.removeCommentById = (comment_id) => {
+    return db.query(`
+    DELETE FROM comments
+    WHERE comment_id = $1
+    RETURNING *
+    `,[comment_id])
+    .then((comment)=>{
+        if(comment.rowCount===0){
+            const error = new Error('Not Found')
+            error.status = 404
+            throw error
+        }
+    })
+}
