@@ -1,5 +1,5 @@
 
-const {fetchTopics,fetchArticleById,fetchArticles,fetchCommentsByArticleId,createCommentByArticleId,updateArticleById,removeCommentById} = require('../models/api.models');
+const {fetchTopics,fetchArticleById,fetchArticles,fetchCommentsByArticleId,createCommentByArticleId,updateArticleById,removeCommentById,fetchUsers} = require('../models/api.models');
 
 
 exports.getTopics = (req,res,next) => {
@@ -72,6 +72,14 @@ exports.deleteCommentById = (req,res,next) => {
     removeCommentById(comment_id)
     .then(()=>{
         res.status(204).send()
+    })
+    .catch(next)
+}
+
+exports.getUsers = (req,res,next) => {
+    fetchUsers()
+    .then((users)=>{
+        res.status(200).send({users})
     })
     .catch(next)
 }

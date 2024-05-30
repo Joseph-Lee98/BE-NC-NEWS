@@ -412,3 +412,30 @@ describe('DELETE - /api/comments/:comment_id',()=>{
         })
     })
 })
+
+describe('GET - /api/users',()=>{
+    test('200: Should return 200 status code and correct message containing array of user objects',()=>{
+        return request(app)
+        .get('/api/users')
+        .expect(200)
+        .then(({body})=>{
+            expect(body.users).toHaveLength(4);
+            body.users.forEach((user) => {
+                expect(user).toMatchObject({
+                    username: expect.any(String),
+                    name: expect.any(String),
+                    avatar_url: expect.any(String)
+                })
+            }
+            )
+        })
+    })
+    test('404: should return 404 status code and correct message when endpoint is invalid',()=>{
+        return request(app)
+        .get('/api/userss')
+        .expect(404)
+        .then(({body})=>{
+            expect(body.msg).toBe('Route not found')
+        })
+    })
+})
