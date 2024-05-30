@@ -9,7 +9,8 @@ const {
     convertTimestampToDate,
     createRef,
     formatComments,
-    checkExists
+    checkExists,
+    validDataType
   } = require('../../db/seeds/utils');
 
 
@@ -22,7 +23,7 @@ afterAll(()=>{
     return db.end();
 })
 
-describe('/api/topics',()=>{
+describe('GET - /api/topics',()=>{
     test('200: Should return 200 status code and correct message containing array of topic objects',()=>{
         return request(app)
         .get('/api/topics')
@@ -48,7 +49,7 @@ describe('/api/topics',()=>{
     })
 })
 
-describe('/api',()=>{
+describe('GET - /api',()=>{
     test('200: Should return 200 status code and correct message containing object listing endpoints',()=>{
         return request(app)
         .get('/api')
@@ -68,7 +69,7 @@ describe('/api',()=>{
 
 })
 
-describe('/api/articles/:article_id',()=>{
+describe('GET - /api/articles/:article_id',()=>{
     test('200: should return 200 status code and correct article',()=>{
         return request(app)
         .get('/api/articles/3')
@@ -115,7 +116,7 @@ describe('/api/articles/:article_id',()=>{
 
 })
 
-describe('/api/articles',()=>{
+describe('GET - /api/articles',()=>{
     test('200: Should return 200 status code and correct array of article objects with comment_count property',()=>{
         return request(app)
         .get('/api/articles')
@@ -153,7 +154,7 @@ describe('/api/articles',()=>{
     })
 })
 
-describe('/api/articles/:article_id/comments',()=>{
+describe('GET - /api/articles/:article_id/comments',()=>{
     test('200: should return 200 status code and array of comments where article id matches id passed in as parameter',()=>{
         return request(app)
         .get('/api/articles/3/comments')
@@ -212,4 +213,99 @@ describe('/api/articles/:article_id/comments',()=>{
         })
     })
 
+})
+
+describe('POST - /api/articles/:article_id/comments',()=>{
+    test('201: should return 201 status code and the comment object added to the comments table',()=>{
+        return request(app)
+        .post('/api/articles/2/comments')
+        .send({
+            username: 'rogersop',
+            body: 'This is a very long article'
+        })
+        .expect(201)
+        .then(({body})=>{
+
+            expect(body.comment).toMatchObject({
+                body: 'This is a very long article',
+                votes: 0,
+                author: 'rogersop',
+                article_id: 2,
+                created_at: expect.any(String),
+                comment_id: 19
+            })
+        })
+    })
+    test('404: Should return 404 status code and correct message when article_id parameter is valid but not found',()=>{
+        return request(app)
+        .post('/api/articles/50/comments')
+        .send({
+            username: 'rogersop',
+            body: 'This is a very long article'
+        })
+        .expect(404)
+        .then(({body})=>{
+            expect(body.msg).toBe('Not Found')
+        })
+    })
+    test('404: Should return 404 status code and correct message when username is valid but not found',()=>{
+        return request(app)
+        .post('/api/articles/2/comments')
+        .send({
+            username: 'manicstreetpreacher',
+            body: 'This is a very long article'
+        })
+        .expect(404)
+        .then(({body})=>{
+            expect(body.msg).toBe('Not Found')
+        })
+    })
+    test('400: Should return 400 status code and correct message when article_id parameter is invalid',()=>{
+        return request(app)
+        .post('/api/articles/banana/comments')
+        .send({
+            username: 'rogersop',
+            body: 'This is a very long article'
+        })
+        .expect(400)
+        .then(({body})=>{
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test('400: Should return 400 status code and correct message when username is invalid',()=>{
+        return request(app)
+        .post('/api/articles/2/comments')
+        .send({
+            username: 10,
+            body: 'This is a very long article'
+        })
+        .expect(400)
+        .then(({body})=>{
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test('400: Should return 400 status code and correct message when body is invalid',()=>{
+        return request(app)
+        .post('/api/articles/2/comments')
+        .send({
+            username: 'rogersop',
+            body: 10
+        })
+        .expect(400)
+        .then(({body})=>{
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test('404: should return 404 status code and correct message when endpoint is invalid',()=>{
+        return request(app)
+        .post('/api/articls/4/comments')
+        .send({
+            username: 'rogersop',
+            body: 'This is a very long article'
+        })
+        .expect(404)
+        .then(({body})=>{
+            expect(body.msg).toBe('Route not found')
+        })
+    })
 })
