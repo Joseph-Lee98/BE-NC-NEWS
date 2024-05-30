@@ -1,5 +1,5 @@
 
-const {fetchTopics,fetchArticleById,fetchArticles,fetchCommentsByArticleId,createCommentByArticleId} = require('../models/api.models');
+const {fetchTopics,fetchArticleById,fetchArticles,fetchCommentsByArticleId,createCommentByArticleId,updateArticleById} = require('../models/api.models');
 
 
 exports.getTopics = (req,res,next) => {
@@ -53,6 +53,16 @@ exports.postCommentByArticleId = (req,res,next) => {
     createCommentByArticleId(article_id,body)
     .then((comment)=>{
         res.status(201).send({comment})
+    })
+    .catch(next)
+}
+
+exports.patchArticleById = (req,res,next) => {
+    const {article_id} = req.params;
+    const body = req.body;
+    updateArticleById(article_id,body)
+    .then((article)=>{
+        res.status(200).send({article})
     })
     .catch(next)
 }
