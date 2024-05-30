@@ -85,3 +85,22 @@ exports.createCommentByArticleId = (article_id,body) => {
         return comment.rows[0]
     })
 }
+
+exports.updateArticleById = (article_id,body) => {
+    const {inc_votes} = body;
+    return validDataType('number',inc_votes)
+    .then(()=>{
+    return checkExists('articles','article_id',article_id)
+    })
+    .then(()=>{
+    return db.query(`
+    UPDATE articles
+    SET votes = votes + $1
+    WHERE article_id = $2
+    RETURNING *;
+    `,[inc_votes,article_id])
+    })
+    .then((article)=>{
+        return article.rows[0]
+    })
+}

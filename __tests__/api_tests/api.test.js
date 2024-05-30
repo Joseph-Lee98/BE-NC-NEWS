@@ -171,7 +171,7 @@ describe('GET - /api/articles/:article_id/comments',()=>{
                     body: expect.any(String),
                     votes: expect.any(Number),
                     author: expect.any(String),
-                    article_id: expect.any(Number),
+                    article_id: 3,
                     created_at: expect.any(String),
                     comment_id: expect.any(Number)
                 })
@@ -206,7 +206,7 @@ describe('GET - /api/articles/:article_id/comments',()=>{
     })
     test('404: should return 404 status code and correct message when endpoint is invalid',()=>{
         return request(app)
-        .get('/api/articls/4')
+        .get('/api/articls/4/comments')
         .expect(404)
         .then(({body})=>{
             expect(body.msg).toBe('Route not found')
@@ -302,6 +302,74 @@ describe('POST - /api/articles/:article_id/comments',()=>{
         .send({
             username: 'rogersop',
             body: 'This is a very long article'
+        })
+        .expect(404)
+        .then(({body})=>{
+            expect(body.msg).toBe('Route not found')
+        })
+    })
+})
+
+describe('PATCH - /api/articles/:article_id',()=>{
+    test('200: should return 200 status code and the updated article object in the articles table',()=>{
+        return request(app)
+        .patch('/api/articles/2')
+        .send({
+            inc_votes: 5
+        })
+        .expect(200)
+        .then(({body})=>{
+            expect(body.article).toEqual({
+                article_id: 2,
+                title: "Sony Vaio; or, The Laptop",
+                topic: "mitch",
+                author: "icellusedkars",
+                votes: 5,
+                body: "Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.",
+                created_at: "2020-10-16T05:03:00.000Z",
+                article_img_url:
+                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+            })
+        })
+    })
+    test('404: Should return 404 status code and correct message when article_id parameter is valid but not found',()=>{
+        return request(app)
+        .patch('/api/articles/50')
+        .send({
+            inc_votes: 5
+        })
+        .expect(404)
+        .then(({body})=>{
+            expect(body.msg).toBe('Not Found')
+        })
+    })
+    test('400: Should return 400 status code and correct message when article_id parameter is invalid',()=>{
+        return request(app)
+        .patch('/api/articles/banana')
+        .send({
+            inc_votes: 5
+        })
+        .expect(400)
+        .then(({body})=>{
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test('400: Should return 400 status code and correct message when inc_votes value is invalid',()=>{
+        return request(app)
+        .patch('/api/articles/2')
+        .send({
+            inc_votes: '5'
+        })
+        .expect(400)
+        .then(({body})=>{
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test('404: should return 404 status code and correct message when endpoint is invalid',()=>{
+        return request(app)
+        .patch('/api/articls/4')
+        .send({
+            inc_votes: 5,
         })
         .expect(404)
         .then(({body})=>{
