@@ -31,17 +31,32 @@ exports.fetchArticleById = (article_id) => {
     })
 }
 
-exports.fetchArticles = () => {
-    return db.query(`
-    SELECT articles.article_id, title, articles.author, topic, articles.created_at, articles.votes, article_img_url, SUM(COALESCE(comments.article_id,0)) AS comment_count
+exports.fetchArticles = (topic) => {
+    let queryStr = `SELECT articles.article_id, title, articles.author, topic, articles.created_at, articles.votes, article_img_url, SUM(COALESCE(comments.article_id,0)) AS comment_count
     FROM articles LEFT JOIN comments
-    ON articles.article_id = comments.article_id
-    GROUP BY articles.article_id, title, articles.author, topic, articles.created_at, articles.votes, article_img_url
-    ORDER BY articles.created_at DESC
-    `)
-    .then((articles)=>{
-        return articles.rows
-    })
+    ON articles.article_id = comments.article_id `;
+    const queryValues = [];
+    
+    if(topic!==undefined){
+        queryStr+=`WHERE topic = $1 `
+        queryValues.push(topic)
+    } 
+
+    queryStr+=`GROUP BY articles.article_id, title, articles.author, topic, articles.created_at, articles.votes, article_img_url ORDER BY articles.created_at DESC`;
+
+    return new Promise((resolve, reject) => {
+        if (topic !== undefined) {
+          resolve(checkExists('topics', 'slug', topic));
+        } else {
+          resolve();
+        }
+      })
+      .then(() => {
+        return db.query(queryStr, queryValues);
+      })
+      .then((articles) => {
+        return articles.rows;
+      });
 }
 
 exports.fetchCommentsByArticleId = (article_id) => {

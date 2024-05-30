@@ -117,7 +117,7 @@ describe('GET - /api/articles/:article_id',()=>{
 })
 
 describe('GET - /api/articles',()=>{
-    test('200: Should return 200 status code and correct array of article objects with comment_count property',()=>{
+    test('200: When no topic query, should return 200 status code and correct array of article objects with comment_count property',()=>{
         return request(app)
         .get('/api/articles')
         .expect(200)
@@ -144,12 +144,39 @@ describe('GET - /api/articles',()=>{
             )
         })
     })
-    test('404: should return 404 status code and correct message when endpoint is invalid',()=>{
+    test('200: When passed a topic query, should return 200 status code and correct array of article objects with comment_count property, where topic property of each object matches topic query',()=>{
         return request(app)
-        .get('/api/articls')
+        .get('/api/articles?topic=mitch')
+        .expect(200)
+        .then(({body})=>{
+            expect(body.articles).toHaveLength(12);
+            expect(body.articles).toBeSortedBy("created_at",{
+                descending: true
+            })
+            body.articles.forEach((article) => {
+                expect(article).toMatchObject({
+                    article_id: expect.any(Number),
+                    title: expect.any(String),
+                    author: expect.any(String),
+                    topic: 'mitch',
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                    comment_count: expect.anything()
+                })
+                const comment_count = Number(article.comment_count);
+                expect(typeof comment_count).toBe('number');
+                expect(Number.isNaN(comment_count)).toBe(false);
+            }
+            )
+        })
+    })
+    test('404: Should return 404 status code and correct message when topic is not found in slug property of topics table',()=>{
+        return request(app)
+        .get('/api/articles?topic=dogs')
         .expect(404)
         .then(({body})=>{
-            expect(body.msg).toBe('Route not found')
+            expect(body.msg).toBe('Not Found')
         })
     })
 })
