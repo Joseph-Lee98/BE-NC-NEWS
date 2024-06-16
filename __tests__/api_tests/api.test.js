@@ -415,6 +415,8 @@ describe('DELETE - /api/comments/:comment_id',()=>{
         .then(({body})=>{
             expect(body).toEqual({})
         })
+        .then(()=>db.query('SELECT * FROM comments'))
+        .then((comments)=>expect(comments.rowCount).toBe(17))
     })
     test('400: Should return 400 status code and correct message when comment_id is invalid',()=>{
         return request(app)
