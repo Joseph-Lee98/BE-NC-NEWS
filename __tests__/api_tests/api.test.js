@@ -102,7 +102,7 @@ describe('GET - /api/articles/:article_id',()=>{
     })
 })
 
-describe.only('GET - /api/articles',()=>{
+describe('GET - /api/articles',()=>{
     test('200: When no topic query, should return 200 status code and correct array of article objects with comment_count property',()=>{
         return request(app)
         .get('/api/articles')
