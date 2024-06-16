@@ -32,32 +32,37 @@ exports.fetchArticleById = (article_id) => {
     })
 }
 
-exports.fetchArticles = (topic) => {
+exports.fetchArticles = (queries) => {
     let queryStr = `SELECT articles.article_id, title, articles.author, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments.article_id) AS comment_count
     FROM articles LEFT JOIN comments
     ON articles.article_id = comments.article_id `;
     const queryValues = [];
-    
-    if(topic!==undefined){
-        queryStr+=`WHERE topic = $1 `
-        queryValues.push(topic)
-    } 
-
-    queryStr+=`GROUP BY articles.article_id, title, articles.author, topic, articles.created_at, articles.votes, article_img_url ORDER BY articles.created_at DESC`;
 
     return new Promise((resolve, reject) => {
-        if (topic !== undefined) {
-          resolve(checkExists('topics', 'slug', topic));
+        if (Object.keys(queries).length > 0) {
+            if (queries.topic === undefined) {
+                const error = new Error('Bad Request');
+                error.status = 400;
+                throw error;
+            } else {
+                resolve(checkExists('topics', 'slug', queries.topic));
+            }
         } else {
-          resolve();
+            resolve();
         }
-      })
-      .then(() => {
+    })
+    .then(() => {
+        if (Object.keys(queries).length > 0 && queries.topic !== undefined) {
+            queryStr += `WHERE topic = $1 `;
+            queryValues.push(queries.topic);
+        }
+        queryStr += `GROUP BY articles.article_id, title, articles.author, topic, articles.created_at, articles.votes, article_img_url ORDER BY articles.created_at DESC`;
+
         return db.query(queryStr, queryValues);
-      })
-      .then((articles) => {
-        return articles.rows;
-      });
+    })
+    .then((result) => {
+        return result.rows;
+    });
 }
 
 exports.fetchCommentsByArticleId = (article_id) => {

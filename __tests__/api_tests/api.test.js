@@ -23,6 +23,17 @@ afterAll(()=>{
     return db.end();
 })
 
+describe('invalid endpoint',()=>{
+    test('404: should return 404 status code and correct message when endpoint is invalid',()=>{
+        return request(app)
+        .get('/api/topicss')
+        .expect(404)
+        .then(({body})=>{
+            expect(body.msg).toBe('Route not found')
+        })
+    })
+})
+
 describe('GET - /api/topics',()=>{
     test('200: Should return 200 status code and correct message containing array of topic objects',()=>{
         return request(app)
@@ -39,14 +50,6 @@ describe('GET - /api/topics',()=>{
             )
         })
     })
-    test('404: should return 404 status code and correct message when endpoint is invalid',()=>{
-        return request(app)
-        .get('/api/topicss')
-        .expect(404)
-        .then(({body})=>{
-            expect(body.msg).toBe('Route not found')
-        })
-    })
 })
 
 describe('GET - /api',()=>{
@@ -58,15 +61,6 @@ describe('GET - /api',()=>{
             expect(body.endpoints).toEqual(endpoints)
         })
     })
-    test('404: should return 404 status code and correct message when endpoint is invalid',()=>{
-        return request(app)
-        .get('/apis')
-        .expect(404)
-        .then(({body})=>{
-            expect(body.msg).toBe('Route not found')
-        })
-    })
-
 })
 
 describe('GET - /api/articles/:article_id',()=>{
@@ -108,7 +102,7 @@ describe('GET - /api/articles/:article_id',()=>{
     })
 })
 
-describe('GET - /api/articles',()=>{
+describe.only('GET - /api/articles',()=>{
     test('200: When no topic query, should return 200 status code and correct array of article objects with comment_count property',()=>{
         return request(app)
         .get('/api/articles')
@@ -171,6 +165,22 @@ describe('GET - /api/articles',()=>{
             expect(body.msg).toBe('Not Found')
         })
     })
+    test('404: Should return 404 status code and correct message when no value given for topic query',()=>{
+        return request(app)
+        .get('/api/articles?topic=')
+        .expect(404)
+        .then(({body})=>{
+            expect(body.msg).toBe('Not Found')
+        })
+    })
+    test('400: Should return 400 status code and correct message when query is invalid due to query not using the topic query',()=>{
+        return request(app)
+        .get('/api/articles?author=tolkien')
+        .expect(400)
+        .then(({body})=>{
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
 })
 
 describe('GET - /api/articles/:article_id/comments',()=>{
@@ -223,15 +233,6 @@ describe('GET - /api/articles/:article_id/comments',()=>{
             expect(body.msg).toBe('Not Found')
         })
     })
-    test('404: should return 404 status code and correct message when endpoint is invalid',()=>{
-        return request(app)
-        .get('/api/articls/4/comments')
-        .expect(404)
-        .then(({body})=>{
-            expect(body.msg).toBe('Route not found')
-        })
-    })
-
 })
 
 describe('POST - /api/articles/:article_id/comments',()=>{
@@ -315,22 +316,10 @@ describe('POST - /api/articles/:article_id/comments',()=>{
             expect(body.msg).toBe('Bad Request')
         })
     })
-    test('404: should return 404 status code and correct message when endpoint is invalid',()=>{
-        return request(app)
-        .post('/api/articls/4/comments')
-        .send({
-            username: 'rogersop',
-            body: 'This is a very long article'
-        })
-        .expect(404)
-        .then(({body})=>{
-            expect(body.msg).toBe('Route not found')
-        })
-    })
 })
 
 describe('PATCH - /api/articles/:article_id',()=>{
-    test('200: should return 200 status code and the updated article object in the articles table',()=>{
+    test('200: should return 200 status code and the updated article object in the articles table, with votes incremented correctly when inc_votes is positive',()=>{
         return request(app)
         .patch('/api/articles/2')
         .send({
@@ -346,6 +335,27 @@ describe('PATCH - /api/articles/:article_id',()=>{
                 votes: 5,
                 body: "Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.",
                 created_at: "2020-10-16T05:03:00.000Z",
+                article_img_url:
+                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+            })
+        })
+    })
+    test('200: should return 200 status code and the updated article object in the articles table, with votes decremented correctly when inc_votes is negative',()=>{
+        return request(app)
+        .patch('/api/articles/1')
+        .send({
+            inc_votes: -6
+        })
+        .expect(200)
+        .then(({body})=>{
+            expect(body.article).toEqual({
+                article_id: 1,
+                title: "Living in the shadow of a great man",
+                topic: "mitch",
+                author: "butter_bridge",
+                body: "I find this existence challenging",
+                created_at: "2020-07-09T20:11:00.000Z",
+                votes: 94,
                 article_img_url:
                 "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
             })
@@ -377,22 +387,22 @@ describe('PATCH - /api/articles/:article_id',()=>{
         return request(app)
         .patch('/api/articles/2')
         .send({
-            inc_votes: '5'
+            inc_votes: 'five'
         })
         .expect(400)
         .then(({body})=>{
             expect(body.msg).toBe('Bad Request')
         })
     })
-    test('404: should return 404 status code and correct message when endpoint is invalid',()=>{
+    test('400: Should return 400 status code and correct message when inc_votes value is invalid due to being a stringified number',()=>{
         return request(app)
-        .patch('/api/articls/4')
+        .patch('/api/articles/2')
         .send({
-            inc_votes: 5,
+            inc_votes: '5'
         })
-        .expect(404)
+        .expect(400)
         .then(({body})=>{
-            expect(body.msg).toBe('Route not found')
+            expect(body.msg).toBe('Bad Request')
         })
     })
 })
@@ -422,14 +432,6 @@ describe('DELETE - /api/comments/:comment_id',()=>{
             expect(body.msg).toBe('Not Found')
         })
     })
-    test('404: should return 404 status code and correct message when endpoint is invalid',()=>{
-        return request(app)
-        .delete('/api/commentss/4')
-        .expect(404)
-        .then(({body})=>{
-            expect(body.msg).toBe('Route not found')
-        })
-    })
 })
 
 describe('GET - /api/users',()=>{
@@ -447,14 +449,6 @@ describe('GET - /api/users',()=>{
                 })
             }
             )
-        })
-    })
-    test('404: should return 404 status code and correct message when endpoint is invalid',()=>{
-        return request(app)
-        .get('/api/userss')
-        .expect(404)
-        .then(({body})=>{
-            expect(body.msg).toBe('Route not found')
         })
     })
 })

@@ -31,8 +31,8 @@ exports.getArticleById = (req,res,next) => {
 }
 
 exports.getArticles = (req,res,next) => {
-    const {topic} = req.query
-    fetchArticles(topic)
+    const queries = req.query
+    fetchArticles(queries)
     .then((articles)=>{
         res.status(200).send({articles})
     })
