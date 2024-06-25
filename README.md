@@ -89,3 +89,6 @@ git push origin feature-branch
 
 7) Create a new Pull Request: Go to the original repository on GitHub, and you will see a button to create a pull request from your forked repository.
 
+# Northcoders Ownership Declaration
+
+This portfolio project was created as part of a Digital Skills Bootcamp in Software Engineering provided by Northcoders
