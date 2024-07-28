@@ -2,7 +2,13 @@ const {
   convertTimestampToDate,
   createRef,
   formatComments,
+  hashPassword,
+  hashPasswords,
 } = require("../../utils/seedUtils");
+
+const testData = require("../../db/data/test-data/users");
+
+const bcrypt = require("bcrypt");
 
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
@@ -100,5 +106,39 @@ describe("formatComments", () => {
     const comments = [{ created_at: timestamp }];
     const formattedComments = formatComments(comments, {});
     expect(formattedComments[0].created_at).toEqual(new Date(timestamp));
+  });
+});
+
+describe("hashPassword", () => {
+  test("should hash a password correctly", async () => {
+    const password = "testPassword123";
+    const hashedPassword = await hashPassword(password);
+
+    expect(hashedPassword).not.toBe(password);
+
+    const isMatch = await bcrypt.compare(password, hashedPassword);
+    expect(isMatch).toBe(true);
+  });
+});
+
+describe("hashPasswords", () => {
+  test("should take an array of user objects as input, and return an array of same shape but with the password in each object having been hashed correctly", async () => {
+    const hashedTestData = await hashPasswords(testData);
+
+    // Check that each password is hashed and not the same as the original
+    hashedTestData.forEach((user, index) => {
+      expect(user.password).not.toBe(testData[index].password);
+    });
+
+    // Verify that the hashed passwords can be verified
+    const passwordChecks = await Promise.all(
+      testData.map((user, index) =>
+        bcrypt.compare(user.password, hashedTestData[index].password)
+      )
+    );
+
+    passwordChecks.forEach((isMatch) => {
+      expect(isMatch).toBe(true);
+    });
   });
 });
