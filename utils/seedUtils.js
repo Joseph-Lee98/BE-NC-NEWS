@@ -28,3 +28,16 @@ exports.hashPassword = async (password) => {
   const hashedPassword = await bcrypt.hash(password, saltRounds);
   return hashedPassword;
 };
+
+exports.hashPasswords = async (userData) => {
+  const hashedUserData = await Promise.all(
+    userData.map(async (user) => {
+      const hashedPassword = await hashPassword(user.password);
+      return {
+        ...user,
+        password: hashedPassword,
+      };
+    })
+  );
+  return hashedUserData;
+};
