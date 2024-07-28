@@ -2,7 +2,11 @@ const {
   convertTimestampToDate,
   createRef,
   formatComments,
+  hashPassword,
+  hashPasswords,
 } = require("../../utils/seedUtils");
+
+const bcrypt = require("bcrypt");
 
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
@@ -101,4 +105,20 @@ describe("formatComments", () => {
     const formattedComments = formatComments(comments, {});
     expect(formattedComments[0].created_at).toEqual(new Date(timestamp));
   });
+});
+
+describe("hashPassword", () => {
+  test("should hash a password correctly", async () => {
+    const password = "testPassword123";
+    const hashedPassword = await hashPassword(password);
+
+    expect(hashedPassword).not.toBe(password);
+
+    const isMatch = await bcrypt.compare(password, hashedPassword);
+    expect(isMatch).toBe(true);
+  });
+});
+
+describe("hashPasswords", () => {
+  test("", () => {});
 });
