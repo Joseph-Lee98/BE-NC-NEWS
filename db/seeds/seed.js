@@ -24,7 +24,7 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
       username VARCHAR(20) PRIMARY KEY,
       name VARCHAR(30) NOT NULL,
       avatar_url VARCHAR,
-      password VARCHAR(30) NOT NULL
+      password VARCHAR NOT NULL
     );`);
 
   await Promise.all([topicsTablePromise, usersTablePromise]);
