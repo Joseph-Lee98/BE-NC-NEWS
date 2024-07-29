@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "precommit": "npm test"
   },
   "keywords": [],
   "author": "",
@@ -27,5 +28,14 @@
       "jest-extended/all",
       "jest-sorted"
     ]
-  }
+  },
+  "husky": {
+
+   "hooks": {
+
+     "pre-commit": "npm run precommit"
+
+   }
+
+ }
 }
