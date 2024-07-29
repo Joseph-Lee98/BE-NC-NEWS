@@ -1,11 +1,14 @@
 {
   "name": "be-nc-news",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "BE-NC-NEWS",
+  "main": "listen.js",
   "scripts": {
     "test": "jest",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "setup-dbs": "psql -f ./db/setup.sql",
+    "seed": "node ./db/seeds/run-seed.js",
+    "start": "node listen.js"
   },
   "keywords": [],
   "author": "",
