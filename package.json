@@ -27,5 +27,10 @@
       "jest-extended/all",
       "jest-sorted"
     ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test"
+    }
   }
 }
