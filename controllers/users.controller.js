@@ -8,12 +8,12 @@ exports.loginUser = async (req, res, next) => {
   if (username === undefined || password === undefined) {
     return res
       .status(400)
-      .json({ message: "Username and password are required" });
+      .send({ message: "Username and password are required" });
   }
   try {
     const user = await verifyUser(username, password);
     if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).send({ message: "Invalid credentials" });
     }
     const token = jwt.sign(
       { username: user.username, role: user.role },
@@ -21,17 +21,13 @@ exports.loginUser = async (req, res, next) => {
       { expiresIn: "1h" }
     );
 
-    res.status(200).json({
-      status: "success",
-      message: "Login successful",
-      data: {
-        user: {
-          username: user.username,
-          name: user.name,
-          role: user.role,
-        },
-        token,
+    res.status(200).send({
+      user: {
+        username: user.username,
+        name: user.name,
+        role: user.role,
       },
+      token,
     });
   } catch (error) {
     next(error);

@@ -9,7 +9,7 @@ beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
 describe("POST /api/users", () => {
-  test("Logs in the user and returns the user object", async () => {
+  test("Logs in the user and returns the user object and token", async () => {
     const loginObj = {
       username: "butter_bridge",
       password: "P@ssw0rd_Br1dge!",
@@ -20,16 +20,18 @@ describe("POST /api/users", () => {
       .send(loginObj)
       .expect(200)
       .then(({ body }) => {
-        const { user } = body.data;
-        expect(user).toEqual({
+        expect(body.user).toEqual({
           name: "jonny",
           username: "butter_bridge",
           role: "user",
         });
+        expect(body.token).toBeDefined();
+        expect(typeof body.token).toBe("string");
+        expect(body.token).not.toBe("");
       });
   });
 
-  test("Logs in as admin and returns the admin object", async () => {
+  test("Logs in as admin and returns the admin user object and token", async () => {
     const loginObj = {
       username: process.env.ADMIN_USERNAME,
       password: process.env.ADMIN_PASSWORD,
@@ -40,12 +42,14 @@ describe("POST /api/users", () => {
       .send(loginObj)
       .expect(200)
       .then(({ body }) => {
-        const { user } = body.data;
-        expect(user).toEqual({
+        expect(body.user).toEqual({
           name: "Admin User",
           username: process.env.ADMIN_USERNAME,
           role: "admin",
         });
+        expect(body.token).toBeDefined();
+        expect(typeof body.token).toBe("string");
+        expect(body.token).not.toBe("");
       });
   });
 
@@ -133,7 +137,7 @@ describe("POST /api/users", () => {
       .send(loginObj)
       .expect(200);
 
-    const token = loginResponse.body.data.token;
+    const token = loginResponse.body.token;
 
     await request(app)
       .post("/api/users/login")
