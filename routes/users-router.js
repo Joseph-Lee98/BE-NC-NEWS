@@ -1,9 +1,10 @@
-import { Router } from "express";
-import { registerUser, loginUser } from "../controllers/users.controller";
-import { preventLoggedInUser } from "../middleware/auth";
+const { registerUser, loginUser } = require("../controllers/users.controller");
+const { preventLoggedInUser } = require("../middleware/auth");
 
-export const usersRouter = Router();
+const usersRouter = require("express").Router();
 
 usersRouter.route("/").post(registerUser);
 
 usersRouter.route("/login").post(preventLoggedInUser, loginUser);
+
+module.exports = usersRouter;
