@@ -42,3 +42,17 @@ exports.checkUser = (req, res, next) => {
 
   next();
 };
+
+exports.preventLoggedInUser = (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    return next(); // No token, proceed to login
+  }
+
+  try {
+    jwt.verify(token, process.env.JWT_SECRET);
+    return res.status(400).json({ message: "Already logged in" });
+  } catch (error) {
+    next(); // Invalid token, proceed to login
+  }
+};

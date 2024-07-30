@@ -5,6 +5,7 @@ const {
   createRef,
   formatComments,
   hashPasswords,
+  hashPassword,
 } = require("../../utils/seedUtils");
 
 const seed = async ({ topicData, userData, articleData, commentData }) => {
@@ -24,7 +25,8 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
       username VARCHAR(20) PRIMARY KEY,
       name VARCHAR(30) NOT NULL,
       avatar_url VARCHAR,
-      password VARCHAR NOT NULL
+      password VARCHAR NOT NULL,
+      role VARCHAR(10) DEFAULT 'user'
     );`);
 
   await Promise.all([topicsTablePromise, usersTablePromise]);
@@ -53,6 +55,15 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
 
   const hashedUserData = await hashPasswords(userData);
 
+  // Create admin user
+  const hashedAdminPassword = await hashPassword(process.env.ADMIN_PASSWORD);
+  const adminUser = {
+    username: process.env.ADMIN_USERNAME,
+    name: "Admin User",
+    password: hashedAdminPassword,
+    role: "admin",
+  };
+
   const insertTopicsQueryStr = format(
     "INSERT INTO topics (slug, description) VALUES %L;",
     topicData.map(({ slug, description }) => [slug, description])
@@ -60,14 +71,18 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
   const topicsPromise = db.query(insertTopicsQueryStr);
 
   const insertUsersQueryStr = format(
-    "INSERT INTO users (username, name, avatar_url, password) VALUES %L;",
-    hashedUserData.map(({ username, name, avatar_url, password }) => [
-      username,
-      name,
-      avatar_url,
-      password,
-    ])
+    "INSERT INTO users (username, name, avatar_url, password, role) VALUES %L;",
+    [...hashedUserData, adminUser].map(
+      ({ username, name, avatar_url, password, role }) => [
+        username,
+        name,
+        avatar_url,
+        password,
+        role,
+      ]
+    )
   );
+
   const usersPromise = db.query(insertUsersQueryStr);
 
   await Promise.all([topicsPromise, usersPromise]);

@@ -5,6 +5,7 @@ module.exports = [
     avatar_url:
       "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953",
     password: "Tickle@2024#",
+    role: "user",
   },
   {
     username: "grumpy19",
@@ -12,6 +13,7 @@ module.exports = [
     avatar_url:
       "https://vignette.wikia.nocookie.net/mrmen/images/7/78/Mr-Grumpy-3A.PNG/revision/latest?cb=20170707233013",
     password: "Grumpy19@#2024",
+    role: "user",
   },
   {
     username: "happyamy2016",
@@ -19,6 +21,7 @@ module.exports = [
     avatar_url:
       "https://vignette1.wikia.nocookie.net/mrmen/images/7/7f/Mr_Happy.jpg/revision/latest?cb=20140102171729",
     password: "H@ppyAmy2024!",
+    role: "user",
   },
   {
     username: "cooljmessy",
@@ -26,6 +29,7 @@ module.exports = [
     avatar_url:
       "https://vignette.wikia.nocookie.net/mrmen/images/1/1a/MR_MESSY_4A.jpg/revision/latest/scale-to-width-down/250?cb=20170730171002",
     password: "C00l_Jm3ssy#23",
+    role: "user",
   },
   {
     username: "weegembump",
@@ -33,6 +37,7 @@ module.exports = [
     avatar_url:
       "https://vignette.wikia.nocookie.net/mrmen/images/7/7e/MrMen-Bump.png/revision/latest?cb=20180123225553",
     password: "W33gemBump@2024",
+    role: "user",
   },
   {
     username: "jessjelly",
@@ -40,5 +45,6 @@ module.exports = [
     avatar_url:
       "https://vignette.wikia.nocookie.net/mrmen/images/4/4f/MR_JELLY_4A.jpg/revision/latest?cb=20180104121141",
     password: "J3ss_J3lly#21",
+    role: "user",
   },
 ];
