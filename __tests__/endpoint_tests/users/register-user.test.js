@@ -4,7 +4,17 @@ const db = require("../../../db/connection");
 const seed = require("../../../db/seeds/seed");
 const testData = require("../../../db/data/test-data");
 
-beforeEach(() => seed(testData));
+beforeEach(async () => {
+  await db.query("BEGIN;"); // Start a new transaction
+  await db.query(
+    `TRUNCATE TABLE comments, articles, users, topics, deletedUsers RESTART IDENTITY CASCADE;`
+  );
+  await seed(testData);
+});
+
+afterEach(async () => {
+  await db.query("ROLLBACK;"); // Roll back transaction to reset state for next test
+});
 
 afterAll(() => db.end());
 
@@ -35,7 +45,6 @@ describe("POST /api/users", () => {
         expect(body.token).not.toBe("");
       });
     const usersTable = await db.query("SELECT * FROM users");
-    console.log("usersTable: ", usersTable);
     expect(usersTable.rows).toHaveLength(6);
   });
   test("409 when registering with a username that belonged to an inactive user", async () => {
