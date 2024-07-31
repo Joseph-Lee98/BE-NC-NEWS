@@ -45,7 +45,6 @@ describe("POST /api/users", () => {
         expect(body.token).not.toBe("");
       });
     const usersTable = await db.query("SELECT * FROM users");
-    console.log("usersTable: ", usersTable);
     expect(usersTable.rows).toHaveLength(6);
   });
   test("409 when registering with a username that belonged to an inactive user", async () => {
