@@ -8,8 +8,8 @@ beforeEach(() => seed(testData));
 
 afterAll(() => db.end());
 
-describe("POST /api/users", () => {
-  test("Logs in the user and returns the user object and token", async () => {
+describe("POST /api/users/login", () => {
+  test("Logs in as user and returns the user object and token", async () => {
     const loginObj = {
       username: "butter_bridge",
       password: "P@ssw0rd_Br1dge!",
@@ -24,6 +24,8 @@ describe("POST /api/users", () => {
           name: "jonny",
           username: "butter_bridge",
           role: "user",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
         });
         expect(body.token).toBeDefined();
         expect(typeof body.token).toBe("string");
@@ -46,6 +48,7 @@ describe("POST /api/users", () => {
           name: "Admin User",
           username: process.env.ADMIN_USERNAME,
           role: "admin",
+          avatar_url: "https://cdn-icons-png.flaticon.com/512/4919/4919646.png",
         });
         expect(body.token).toBeDefined();
         expect(typeof body.token).toBe("string");
