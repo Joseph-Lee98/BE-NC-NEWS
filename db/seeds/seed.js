@@ -75,12 +75,13 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
     };
 
     const insertTopicsQueryStr = format(
-      "INSERT INTO topics (slug, description) VALUES %L;",
+      `INSERT INTO topics (slug, description) VALUES %L
+       ON CONFLICT (slug) DO NOTHING;`,
       topicData.map(({ slug, description }) => [slug, description])
     );
 
     const insertUsersQueryStr = format(
-      "INSERT INTO users (username, name, avatar_url, password, role) VALUES %L;",
+      "INSERT INTO users (username, name, avatar_url, password, role) VALUES %L ON CONFLICT (username) DO NOTHING;",
       [...hashedUserData, adminUser].map(
         ({ username, name, avatar_url, password, role }) => [
           username,
