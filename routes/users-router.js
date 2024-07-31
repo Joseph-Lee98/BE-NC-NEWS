@@ -3,7 +3,7 @@ const { preventLoggedInUser } = require("../middleware/auth");
 
 const usersRouter = require("express").Router();
 
-usersRouter.route("/").post(registerUser);
+usersRouter.route("/").post(preventLoggedInUser, registerUser);
 
 usersRouter.route("/login").post(preventLoggedInUser, loginUser);
 

@@ -1,0 +1,49 @@
+{
+  "GET /api": {
+    "description": "serves up a json representation of all the available endpoints of the api",
+    "queries": [],
+    "exampleResponse": {
+      "GET /api/topics": {
+        "description": "serves an array of all topics",
+        "queries": [],
+        "exampleResponse": {
+          "topics": [{ "slug": "football", "description": "Footie!" }]
+        }
+      },
+      "GET /api/articles": {
+        "description": "serves an array of all articles",
+        "queries": ["author", "topic", "sort_by", "order"],
+        "exampleResponse": {
+          "articles": [
+            {
+              "article_id": 11,
+              "title": "Am I a cat?",
+              "author": "icellusedkars",
+              "topic": "mitch",
+              "created_at": "2020-01-15T22:21:00.000Z",
+              "votes": 0,
+              "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              "comment_count": "0"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "POST /api/users/login": {
+    "description": "allows the user to log into their account.",
+    "example request body": {
+      "username": "butter_bridge",
+      "password": "P@ssw0rd_Br1dge!"
+    },
+    "queries": [],
+    "example response": {
+      "user": {
+        "username": "butter_bridge",
+        "name": "jonny",
+        "role": "user"
+      },
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJ1dHRlcl9icmlkZ2UiLCJyb2xlIjoidXNlciIsImlhdCI6MTY4MDY3NDA2MCwiZXhwIjoxNjgwNjc3NjYwfQ.sYpFZP0Fz8Hby8QOCZYV8PqOlgfZHMoNql0dQX6y7aQ"
+    }
+  }
+}
