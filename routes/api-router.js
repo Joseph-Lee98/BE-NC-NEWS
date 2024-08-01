@@ -1,4 +1,6 @@
+const { getEndpoints } = require("../controllers/api.controller.js");
 const apiRouter = require("express").Router();
+apiRouter.route("/").get(getEndpoints);
 
 // const topicsRouter = require("./topics-router.js");
 const usersRouter = require("./users-router.js");

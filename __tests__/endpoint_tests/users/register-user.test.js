@@ -6,9 +6,9 @@ const testData = require("../../../db/data/test-data");
 
 beforeEach(async () => {
   await db.query("BEGIN;"); // Start a new transaction
-  await db.query(
-    `TRUNCATE TABLE comments, articles, users, topics, deletedUsers RESTART IDENTITY CASCADE;`
-  );
+  // await db.query(
+  //   `TRUNCATE TABLE comments, articles, users, topics, deletedUsers RESTART IDENTITY CASCADE;`
+  // );
   await seed(testData);
 });
 
@@ -308,7 +308,7 @@ describe("POST /api/users", () => {
       });
   });
 
-  test("400 when registering whilst already logged in by having a valid JSON web token in request header", async () => {
+  test("409 when registering whilst already logged in by having a valid JSON web token in request header", async () => {
     const registerObj = {
       username: "Boromir",
       name: "Sean",
@@ -333,7 +333,7 @@ describe("POST /api/users", () => {
       .post("/api/users")
       .set("Authorization", `Bearer ${token}`)
       .send(registerObj)
-      .expect(400)
+      .expect(409)
       .then(({ body }) => {
         expect(body.message).toBe("Already logged in");
       });

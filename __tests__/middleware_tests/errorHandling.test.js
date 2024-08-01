@@ -3,13 +3,9 @@ const app = require("../../app");
 const db = require("../../db/connection");
 const seed = require("../../db/seeds/seed");
 const testData = require("../../db/data/test-data");
-const endpoints = require("../../endpoints.json");
 
 beforeEach(async () => {
   await db.query("BEGIN;"); // Start a new transaction
-  // await db.query(
-  //   `TRUNCATE TABLE comments, articles, users, topics, deletedUsers RESTART IDENTITY CASCADE;`
-  // );
   await seed(testData);
 });
 
@@ -19,13 +15,13 @@ afterEach(async () => {
 
 afterAll(() => db.end());
 
-describe("GET - /api", () => {
-  test("200: Should return 200 status code and correct message containing object listing endpoints", () => {
+describe("Error handling middleware", () => {
+  test("404 Route not found", () => {
     return request(app)
-      .get("/api")
-      .expect(200)
+      .get("/api/topicss")
+      .expect(404)
       .then(({ body }) => {
-        expect(body.endpoints).toEqual(endpoints);
+        expect(body.message).toBe("Route not found");
       });
   });
 });

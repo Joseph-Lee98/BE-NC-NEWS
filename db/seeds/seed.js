@@ -75,13 +75,12 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
     };
 
     const insertTopicsQueryStr = format(
-      `INSERT INTO topics (slug, description) VALUES %L
-       ON CONFLICT (slug) DO NOTHING;`,
+      `INSERT INTO topics (slug, description) VALUES %L;`,
       topicData.map(({ slug, description }) => [slug, description])
     );
 
     const insertUsersQueryStr = format(
-      "INSERT INTO users (username, name, avatar_url, password, role) VALUES %L ON CONFLICT (username) DO NOTHING;",
+      "INSERT INTO users (username, name, avatar_url, password, role) VALUES %L;",
       [...hashedUserData, adminUser].map(
         ({ username, name, avatar_url, password, role }) => [
           username,
@@ -97,6 +96,7 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
     await db.query(insertUsersQueryStr);
 
     const formattedArticleData = articleData.map(convertTimestampToDate);
+
     const insertArticlesQueryStr = format(
       "INSERT INTO articles (title, topic, author, body, created_at, votes, article_img_url) VALUES %L RETURNING *;",
       formattedArticleData.map(
@@ -143,9 +143,7 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
       deletedUserData.map(({ username, deleted_at }) => [username, deleted_at])
     );
     await db.query(insertDeletedUsersQueryStr);
-  } catch (error) {
-    console.error("Error seeding database:", error);
-  }
+  } catch (error) {}
 };
 
 module.exports = seed;

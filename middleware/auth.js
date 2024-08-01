@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 
-// Define role hierarchy
 const rolesHierarchy = {
   user: ["user", "admin"],
   admin: ["admin"],
@@ -51,7 +50,9 @@ exports.preventLoggedInUser = (req, res, next) => {
 
   try {
     jwt.verify(token, process.env.JWT_SECRET);
-    return res.status(400).json({ message: "Already logged in" });
+    const error = new Error("Already logged in");
+    error.status = 409;
+    return next(error);
   } catch (error) {
     next(); // Invalid token, proceed to login
   }

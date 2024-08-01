@@ -24,11 +24,7 @@ exports.createUser = async (username, name, password, avatar_url) => {
   }) VALUES ($1,$2,$3${avatar_url ? ",$4" : ""}) RETURNING *`;
 
   const result = await db.query(query, insertValues);
-  // if (result.rows.length === 0) {
-  //   const error = new Error("Registration failed");
-  //   error.status = 400;
-  //   throw error;
-  // }
+
   return result.rows[0];
 };
 
