@@ -6,9 +6,9 @@ const testData = require("../../../db/data/test-data");
 
 beforeEach(async () => {
   await db.query("BEGIN;"); // Start a new transaction
-  await db.query(
-    `TRUNCATE TABLE comments, articles, users, topics, deletedUsers RESTART IDENTITY CASCADE;`
-  );
+  // await db.query(
+  //   `TRUNCATE TABLE comments, articles, users, topics, deletedUsers RESTART IDENTITY CASCADE;`
+  // );
   await seed(testData);
 });
 
