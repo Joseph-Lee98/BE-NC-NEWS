@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 
-// Define role hierarchy
 const rolesHierarchy = {
   user: ["user", "admin"],
   admin: ["admin"],
