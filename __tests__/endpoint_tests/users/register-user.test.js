@@ -308,7 +308,7 @@ describe("POST /api/users", () => {
       });
   });
 
-  test("400 when registering whilst already logged in by having a valid JSON web token in request header", async () => {
+  test("409 when registering whilst already logged in by having a valid JSON web token in request header", async () => {
     const registerObj = {
       username: "Boromir",
       name: "Sean",
@@ -333,7 +333,7 @@ describe("POST /api/users", () => {
       .post("/api/users")
       .set("Authorization", `Bearer ${token}`)
       .send(registerObj)
-      .expect(400)
+      .expect(409)
       .then(({ body }) => {
         expect(body.message).toBe("Already logged in");
       });

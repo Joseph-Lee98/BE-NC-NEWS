@@ -51,7 +51,7 @@ exports.preventLoggedInUser = (req, res, next) => {
 
   try {
     jwt.verify(token, process.env.JWT_SECRET);
-    return res.status(400).json({ message: "Already logged in" });
+    return res.status(409).json({ message: "Already logged in" });
   } catch (error) {
     next(); // Invalid token, proceed to login
   }

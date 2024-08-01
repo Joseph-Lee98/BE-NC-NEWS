@@ -139,7 +139,7 @@ describe("POST /api/users/login", () => {
       });
   });
 
-  test("400 when logging in whilst already logged in by having a valid JSON web token in request header", async () => {
+  test("409 when logging in whilst already logged in by having a valid JSON web token in request header", async () => {
     const loginObj = {
       username: "butter_bridge",
       password: "P@ssw0rd_Br1dge!",
@@ -156,7 +156,7 @@ describe("POST /api/users/login", () => {
       .post("/api/users/login")
       .set("Authorization", `Bearer ${token}`)
       .send(loginObj)
-      .expect(400)
+      .expect(409)
       .then(({ body }) => {
         expect(body.message).toBe("Already logged in");
       });
