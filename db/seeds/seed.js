@@ -74,14 +74,32 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
       avatar_url: "https://cdn-icons-png.flaticon.com/512/4919/4919646.png",
     };
 
+    // const insertTopicsQueryStr = format(
+    //   `INSERT INTO topics (slug, description) VALUES %L
+    //    ON CONFLICT (slug) DO NOTHING;`,
+    //   topicData.map(({ slug, description }) => [slug, description])
+    // );
+
     const insertTopicsQueryStr = format(
-      `INSERT INTO topics (slug, description) VALUES %L
-       ON CONFLICT (slug) DO NOTHING;`,
+      `INSERT INTO topics (slug, description) VALUES %L;`,
       topicData.map(({ slug, description }) => [slug, description])
     );
 
+    // const insertUsersQueryStr = format(
+    //   "INSERT INTO users (username, name, avatar_url, password, role) VALUES %L ON CONFLICT (username) DO NOTHING;",
+    //   [...hashedUserData, adminUser].map(
+    //     ({ username, name, avatar_url, password, role }) => [
+    //       username,
+    //       name,
+    //       avatar_url,
+    //       password,
+    //       role,
+    //     ]
+    //   )
+    // );
+
     const insertUsersQueryStr = format(
-      "INSERT INTO users (username, name, avatar_url, password, role) VALUES %L ON CONFLICT (username) DO NOTHING;",
+      "INSERT INTO users (username, name, avatar_url, password, role) VALUES %L;",
       [...hashedUserData, adminUser].map(
         ({ username, name, avatar_url, password, role }) => [
           username,
@@ -97,6 +115,7 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
     await db.query(insertUsersQueryStr);
 
     const formattedArticleData = articleData.map(convertTimestampToDate);
+
     const insertArticlesQueryStr = format(
       "INSERT INTO articles (title, topic, author, body, created_at, votes, article_img_url) VALUES %L RETURNING *;",
       formattedArticleData.map(
