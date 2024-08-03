@@ -2,13 +2,9 @@ const {
   registerUser,
   loginUser,
   deleteUser,
+  getUser,
 } = require("../controllers/users.controller");
-const {
-  preventLoggedInUser,
-  checkRole,
-  checkUser,
-  checkUserStatus,
-} = require("../middleware/auth");
+const { preventLoggedInUser, authenticateUser } = require("../middleware/auth");
 
 const usersRouter = require("express").Router();
 
@@ -18,6 +14,7 @@ usersRouter.route("/login").post(preventLoggedInUser, loginUser);
 
 usersRouter
   .route("/:username")
-  .delete(checkUserStatus, checkRole("user"), checkUser, deleteUser);
+  .delete(authenticateUser("user"), deleteUser)
+  .get(authenticateUser("user"), getUser);
 
 module.exports = usersRouter;

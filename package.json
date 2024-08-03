@@ -5,6 +5,7 @@
   "main": "listen.js",
   "scripts": {
     "test": "jest",
+    "sql-output": "psql -f playground.sql > playground.txt",
     "prepare": "husky install",
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "node ./db/seeds/run-seed.js",
