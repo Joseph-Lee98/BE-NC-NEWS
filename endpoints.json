@@ -66,5 +66,9 @@
   "DELETE /api/users/:username": {
     "description": "allows the user (or an admin) to delete the user account.",
     "queries": []
+  },
+  "GET /api/users/:username": {
+    "description": "allows the user (or an admin) to get information about the user account.",
+    "queries": []
   }
 }
