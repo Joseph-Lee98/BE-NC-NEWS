@@ -14,7 +14,6 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
     await db.query(`DROP TABLE IF EXISTS articles;`);
     await db.query(`DROP TABLE IF EXISTS users;`);
     await db.query(`DROP TABLE IF EXISTS topics;`);
-    await db.query(`DROP TABLE IF EXISTS deletedUsers;`);
 
     await db.query(`
       CREATE TABLE topics (
@@ -29,7 +28,8 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
         name VARCHAR(30) NOT NULL,
         avatar_url VARCHAR,
         password VARCHAR NOT NULL,
-        role VARCHAR(10) DEFAULT 'user'
+        role VARCHAR(10) DEFAULT 'user',
+        deleted_at TIMESTAMP NULL
       );
     `);
 
@@ -38,7 +38,7 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
         article_id SERIAL PRIMARY KEY,
         title VARCHAR NOT NULL,
         topic VARCHAR NOT NULL REFERENCES topics(slug),
-        author VARCHAR NOT NULL REFERENCES users(username),
+        author VARCHAR(20),
         body VARCHAR NOT NULL,
         created_at TIMESTAMP DEFAULT NOW(),
         votes INT DEFAULT 0 NOT NULL,
@@ -51,16 +51,9 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
         comment_id SERIAL PRIMARY KEY,
         body VARCHAR NOT NULL,
         article_id INT REFERENCES articles(article_id) NOT NULL,
-        author VARCHAR REFERENCES users(username) NOT NULL,
+        author VARCHAR(20),
         votes INT DEFAULT 0 NOT NULL,
         created_at TIMESTAMP DEFAULT NOW()
-      );
-    `);
-
-    await db.query(`
-      CREATE TABLE deletedUsers (
-        username VARCHAR(20) PRIMARY KEY,
-        deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
 
@@ -130,19 +123,6 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
       )
     );
     await db.query(insertCommentsQueryStr);
-
-    const deletedUserData = [
-      {
-        username: "banana",
-        deleted_at: new Date().toISOString(),
-      },
-    ];
-
-    const insertDeletedUsersQueryStr = format(
-      "INSERT INTO deletedUsers (username,deleted_at) VALUES %L;",
-      deletedUserData.map(({ username, deleted_at }) => [username, deleted_at])
-    );
-    await db.query(insertDeletedUsersQueryStr);
   } catch (error) {}
 };
 

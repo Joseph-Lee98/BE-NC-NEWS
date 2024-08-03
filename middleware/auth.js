@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const db = require("../db/connection");
 
 const rolesHierarchy = {
   user: ["user", "admin"],
@@ -7,22 +8,11 @@ const rolesHierarchy = {
 
 exports.checkRole = (role) => {
   return (req, res, next) => {
-    const token = req.headers.authorization?.split(" ")[1];
-
-    if (!token) {
-      return res.status(401).json({ message: "Access denied" });
-    }
-
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = decoded;
-
-      const userRole = decoded.role;
-
+      const userRole = req.user.role;
       if (!rolesHierarchy[role].includes(userRole)) {
         return res.status(403).json({ message: "Forbidden" });
       }
-
       next();
     } catch (error) {
       res.status(401).json({ message: "Invalid token" });
@@ -31,10 +21,9 @@ exports.checkRole = (role) => {
 };
 
 exports.checkUser = (req, res, next) => {
-  const { username } = req.params; // Assumes the route has a `username` parameter
-  const userRole = req.user.role; // req.user is already populated by checkRole
+  const { username } = req.params;
+  const userRole = req.user.role;
 
-  // Check if the username in the token matches the one in the request parameters or if the user is an admin
   if (req.user.username !== username && userRole !== "admin") {
     return res.status(403).json({ message: "Forbidden" });
   }
@@ -55,5 +44,39 @@ exports.preventLoggedInUser = (req, res, next) => {
     return next(error);
   } catch (error) {
     next(); // Invalid token, proceed to login
+  }
+};
+
+exports.checkUserStatus = async (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { username } = decoded;
+
+    const result = await db.query(
+      "SELECT deleted_at FROM users WHERE username = $1",
+      [username]
+    );
+
+    const user = result.rows[0];
+
+    if (!user) {
+      return res.status(401).send({ message: "User not found" });
+    }
+
+    if (user.deleted_at) {
+      return res.status(403).send({ message: "Account deleted" });
+    }
+
+    req.user = decoded;
+
+    next();
+  } catch (error) {
+    res.status(401).json({ message: "Invalid token" });
   }
 };
