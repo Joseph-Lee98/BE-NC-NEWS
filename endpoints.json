@@ -62,5 +62,9 @@
       },
       "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJ1dHRlcl9icmlkZ2UiLCJyb2xlIjoidXNlciIsImlhdCI6MTY4MDY3NDA2MCwiZXhwIjoxNjgwNjc3NjYwfQ.sYpFZP0Fz8Hby8QOCZYV8PqOlgfZHMoNql0dQX6y7aQ"
     }
+  },
+  "DELETE /api/users/:username": {
+    "description": "allows the user (or an admin) to delete the user account.",
+    "queries": []
   }
 }

@@ -14,7 +14,6 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
     await db.query(`DROP TABLE IF EXISTS articles;`);
     await db.query(`DROP TABLE IF EXISTS users;`);
     await db.query(`DROP TABLE IF EXISTS topics;`);
-    // await db.query(`DROP TABLE IF EXISTS deletedUsers;`);
 
     await db.query(`
       CREATE TABLE topics (
@@ -57,13 +56,6 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
         created_at TIMESTAMP DEFAULT NOW()
       );
     `);
-
-    // await db.query(`
-    //   CREATE TABLE deletedUsers (
-    //     username VARCHAR(20) PRIMARY KEY,
-    //     deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    //   );
-    // `);
 
     const hashedUserData = await hashPasswords(userData);
     const hashedAdminPassword = await hashPassword(process.env.ADMIN_PASSWORD);
@@ -131,19 +123,6 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
       )
     );
     await db.query(insertCommentsQueryStr);
-
-    // const deletedUserData = [
-    //   {
-    //     username: "banana",
-    //     deleted_at: new Date().toISOString(),
-    //   },
-    // ];
-
-    // const insertDeletedUsersQueryStr = format(
-    //   "INSERT INTO deletedUsers (username,deleted_at) VALUES %L;",
-    //   deletedUserData.map(({ username, deleted_at }) => [username, deleted_at])
-    // );
-    // await db.query(insertDeletedUsersQueryStr);
   } catch (error) {}
 };
 
