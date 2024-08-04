@@ -68,8 +68,63 @@
     "queries": []
   },
   "GET /api/users/:username": {
-    "description": "allows any user, or admin, to get information about the user account.",
+    "description": "allows conditional access to get information about a user's account.",
     "queries": [],
-    "example response": {}
+    "example response": {
+      "userInformation": {
+        "username": "butter_bridge",
+        "name": "jonny",
+        "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        "role": "user"
+      },
+      "articlesByUser": [
+        {
+          "title": "Moustache",
+          "topic": "mitch",
+          "author": "butter_bridge",
+          "body": "Have you seen the size of that thing?",
+          "created_at": "2020-10-11T11:24:00.000Z",
+          "votes": 0,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        },
+        {
+          "title": "Another article about Mitch",
+          "topic": "mitch",
+          "author": "butter_bridge",
+          "body": "There will never be enough articles about Mitch!",
+          "created_at": "2020-10-11T11:24:00.000Z",
+          "votes": 0,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        }
+      ],
+      "commentsByUser": [
+        {
+          "comment_body": "I am 100% sure that we're not completely sure.",
+          "comment_author": "butter_bridge",
+          "comment_votes": 1,
+          "comment_created_at": "2020-11-24T00:08:00.000Z",
+          "article_title": "UNCOVERED: catspiracy to bring down democracy",
+          "article_topic": "cats",
+          "article_body": "Bastet walks amongst us, and the cats are taking arms!",
+          "articles_created_at": "2020-08-03T13:14:00.000Z",
+          "article_votes": 0,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        },
+        {
+          "comment_body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+          "comment_author": "butter_bridge",
+          "comment_votes": 14,
+          "comment_created_at": "2020-10-31T03:03:00.000Z",
+          "article_title": "Living in the shadow of a great man",
+          "article_topic": "mitch",
+          "article_body": "I find this existence challenging",
+          "articles_created_at": "2020-07-09T20:11:00.000Z",
+          "article_votes": 100,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        }
+      ],
+      "commentCount": 2,
+      "articleCount": 2
+    }
   }
 }
