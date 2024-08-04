@@ -4,7 +4,7 @@
   "description": "BE-NC-NEWS",
   "main": "listen.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "sql-output": "psql -f playground.sql > playground.txt",
     "prepare": "husky install",
     "setup-dbs": "psql -f ./db/setup.sql",

@@ -68,7 +68,8 @@
     "queries": []
   },
   "GET /api/users/:username": {
-    "description": "allows the user (or an admin) to get information about the user account.",
-    "queries": []
+    "description": "allows any user, or admin, to get information about the user account.",
+    "queries": [],
+    "example response": {}
   }
 }

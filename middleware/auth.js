@@ -28,7 +28,7 @@ exports.authenticateUser = (requiredRole) => {
 
       const user = userDeletedResult.rows[0];
 
-      if (!Object.keys(user).length) {
+      if (!user) {
         return res.status(401).json({ message: "User not found" });
       }
 
@@ -53,6 +53,82 @@ exports.authenticateUser = (requiredRole) => {
 
       next();
     } catch (error) {
+      res.status(401).json({ message: "Invalid token" });
+    }
+  };
+};
+
+exports.authenticateUserForUserInformation = () => {
+  return async (req, res, next) => {
+    // Extract the token from the Authorization header
+    const token = req.headers.authorization?.split(" ")[1];
+
+    try {
+      let decoded;
+      // Verify the token, if token is present
+      if (token) {
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded; // Attach user info to the request object
+        // Check if the account is deleted
+
+        const userDeletedResult = await db.query(
+          "SELECT * FROM users WHERE username = $1",
+          [decoded.username]
+        );
+
+        const user = userDeletedResult.rows[0];
+
+        if (!user) {
+          return res.status(401).json({ message: "User not found" });
+        }
+
+        if (user.deleted_at) {
+          return res.status(403).json({ message: "Account deleted" });
+        }
+      }
+
+      // Check if the route has a username parameter and match it
+      const { username } = req.params;
+
+      // Check if the account is deleted
+
+      const queriedUserDeletedResult = await db.query(
+        "SELECT * FROM users WHERE username = $1",
+        [username]
+      );
+
+      const queriedUser = queriedUserDeletedResult.rows[0];
+
+      if (!queriedUser) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      if (queriedUser.deleted_at) {
+        return res.status(403).json({ message: "Account deleted" });
+      }
+
+      const isPrivate = await db.query(
+        "SELECT is_private FROM users WHERE username = $1",
+        [username]
+      );
+
+      const queriedIsPrivate = isPrivate.rows[0].is_private;
+
+      if (decoded) {
+        if (
+          queriedIsPrivate &&
+          decoded.role !== "admin" &&
+          decoded.username !== username
+        ) {
+          return res.status(403).json({ message: "Forbidden" });
+        }
+      } else if (queriedIsPrivate) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      next();
+    } catch (error) {
+      console.error(error);
       res.status(401).json({ message: "Invalid token" });
     }
   };

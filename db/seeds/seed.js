@@ -29,7 +29,8 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
         avatar_url VARCHAR,
         password VARCHAR NOT NULL,
         role VARCHAR(10) DEFAULT 'user',
-        deleted_at TIMESTAMP NULL
+        deleted_at TIMESTAMP NULL,
+        is_private BOOLEAN DEFAULT false
       );
     `);
 
@@ -65,6 +66,7 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
       password: hashedAdminPassword,
       role: "admin",
       avatar_url: "https://cdn-icons-png.flaticon.com/512/4919/4919646.png",
+      is_private: true,
     };
 
     const insertTopicsQueryStr = format(
@@ -73,14 +75,15 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
     );
 
     const insertUsersQueryStr = format(
-      "INSERT INTO users (username, name, avatar_url, password, role) VALUES %L;",
+      "INSERT INTO users (username, name, avatar_url, password, role, is_private) VALUES %L;",
       [...hashedUserData, adminUser].map(
-        ({ username, name, avatar_url, password, role }) => [
+        ({ username, name, avatar_url, password, role, is_private }) => [
           username,
           name,
           avatar_url,
           password,
           role,
+          is_private || false,
         ]
       )
     );

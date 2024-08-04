@@ -4,7 +4,11 @@ const {
   deleteUser,
   getUser,
 } = require("../controllers/users.controller");
-const { preventLoggedInUser, authenticateUser } = require("../middleware/auth");
+const {
+  preventLoggedInUser,
+  authenticateUser,
+  authenticateUserForUserInformation,
+} = require("../middleware/auth");
 
 const usersRouter = require("express").Router();
 
@@ -15,6 +19,6 @@ usersRouter.route("/login").post(preventLoggedInUser, loginUser);
 usersRouter
   .route("/:username")
   .delete(authenticateUser("user"), deleteUser)
-  .get(authenticateUser("user"), getUser);
+  .get(authenticateUserForUserInformation(), getUser);
 
 module.exports = usersRouter;

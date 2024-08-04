@@ -20,6 +20,7 @@ module.exports = [
     avatar_url: "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
     password: "R0g3r_S0p#123",
     role: "user",
+    is_private: true,
   },
   {
     username: "lurker",

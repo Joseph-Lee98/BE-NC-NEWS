@@ -74,14 +74,6 @@ exports.removeUser = async (username) => {
   }
 };
 
-exports.getUserByUsername = async (username) => {
-  const usernameQueryResult = await db.query(
-    "SELECT * FROM users WHERE username = $1 AND deleted_at IS NULL",
-    [username]
-  );
-  return usernameQueryResult.rowCount;
-};
-
 exports.fetchUser = async (username) => {
   const fullUserInformation = {};
 
