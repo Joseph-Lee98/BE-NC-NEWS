@@ -6,13 +6,51 @@ const rolesHierarchy = {
   admin: ["admin"],
 };
 
-exports.checkRole = (role) => {
-  return (req, res, next) => {
+exports.authenticateUser = (requiredRole) => {
+  return async (req, res, next) => {
+    // Extract the token from the Authorization header
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
     try {
-      const userRole = req.user.role;
-      if (!rolesHierarchy[role].includes(userRole)) {
+      // Verify the token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = decoded; // Attach user info to the request object
+
+      // Check if the account is deleted
+      const userDeletedResult = await db.query(
+        "SELECT * FROM users WHERE username = $1",
+        [decoded.username]
+      );
+
+      const user = userDeletedResult.rows[0];
+
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      if (user.deleted_at) {
+        return res.status(403).json({ message: "Account deleted" });
+      }
+
+      // Check if the user has the required role
+      if (!rolesHierarchy[requiredRole].includes(decoded.role)) {
         return res.status(403).json({ message: "Forbidden" });
       }
+
+      // Check if the route has a username parameter and match it
+      const { username } = req.params;
+      if (
+        username &&
+        username !== decoded.username &&
+        decoded.role !== "admin"
+      ) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
       next();
     } catch (error) {
       res.status(401).json({ message: "Invalid token" });
@@ -20,15 +58,80 @@ exports.checkRole = (role) => {
   };
 };
 
-exports.checkUser = (req, res, next) => {
-  const { username } = req.params;
-  const userRole = req.user.role;
+exports.authenticateUserForUserInformation = () => {
+  return async (req, res, next) => {
+    // Extract the token from the Authorization header
+    const token = req.headers.authorization?.split(" ")[1];
 
-  if (req.user.username !== username && userRole !== "admin") {
-    return res.status(403).json({ message: "Forbidden" });
-  }
+    try {
+      let decoded;
+      // Verify the token, if token is present
+      if (token) {
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded; // Attach user info to the request object
+        // Check if the account is deleted
 
-  next();
+        const userDeletedResult = await db.query(
+          "SELECT * FROM users WHERE username = $1",
+          [decoded.username]
+        );
+
+        const user = userDeletedResult.rows[0];
+
+        if (!user) {
+          return res.status(401).json({ message: "User not found" });
+        }
+
+        if (user.deleted_at) {
+          return res.status(403).json({ message: "Account deleted" });
+        }
+      }
+
+      // Check if the route has a username parameter and match it
+      const { username } = req.params;
+
+      // Check if the account is deleted
+
+      const queriedUserDeletedResult = await db.query(
+        "SELECT * FROM users WHERE username = $1",
+        [username]
+      );
+
+      const queriedUser = queriedUserDeletedResult.rows[0];
+
+      if (!queriedUser) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      if (queriedUser.deleted_at) {
+        return res.status(403).json({ message: "Account deleted" });
+      }
+
+      const isPrivate = await db.query(
+        "SELECT is_private FROM users WHERE username = $1",
+        [username]
+      );
+
+      const queriedIsPrivate = isPrivate.rows[0].is_private;
+
+      if (decoded) {
+        if (
+          queriedIsPrivate &&
+          decoded.role !== "admin" &&
+          decoded.username !== username
+        ) {
+          return res.status(403).json({ message: "Forbidden" });
+        }
+      } else if (queriedIsPrivate) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      next();
+    } catch (error) {
+      console.error(error);
+      res.status(401).json({ message: "Invalid token" });
+    }
+  };
 };
 
 exports.preventLoggedInUser = (req, res, next) => {
@@ -44,39 +147,5 @@ exports.preventLoggedInUser = (req, res, next) => {
     return next(error);
   } catch (error) {
     next(); // Invalid token, proceed to login
-  }
-};
-
-exports.checkUserStatus = async (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-
-  if (!token) {
-    return res.status(401).json({ message: "No token provided" });
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const { username } = decoded;
-
-    const result = await db.query(
-      "SELECT deleted_at FROM users WHERE username = $1",
-      [username]
-    );
-
-    const user = result.rows[0];
-
-    if (!user) {
-      return res.status(401).send({ message: "User not found" });
-    }
-
-    if (user.deleted_at) {
-      return res.status(403).send({ message: "Account deleted" });
-    }
-
-    req.user = decoded;
-
-    next();
-  } catch (error) {
-    res.status(401).json({ message: "Invalid token" });
   }
 };

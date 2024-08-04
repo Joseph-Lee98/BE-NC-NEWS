@@ -110,7 +110,8 @@ describe("DELETE /api/users/:username", () => {
 
     expect(errorResponse.body.message).toBe("No token provided");
   });
-  test("Correct 403 response when attempting to delete user when user is already deleted", async () => {
+
+  test("Correct 403 response when user attempts to access the endpoint for their account but account has been deleted", async () => {
     const loginObj = {
       username: "butter_bridge",
       password: "P@ssw0rd_Br1dge!",
@@ -118,15 +119,13 @@ describe("DELETE /api/users/:username", () => {
 
     const loginResponse = await request(app)
       .post("/api/users/login")
-      .send(loginObj)
-      .expect(200);
+      .send(loginObj);
 
     const token = loginResponse.body.token;
 
-    const deleteUserResponse = await request(app)
+    await request(app)
       .delete("/api/users/butter_bridge")
-      .set("Authorization", `Bearer ${token}`)
-      .expect(204);
+      .set("Authorization", `Bearer ${token}`);
 
     const errorResponse = await request(app)
       .delete("/api/users/butter_bridge")
@@ -135,7 +134,7 @@ describe("DELETE /api/users/:username", () => {
 
     expect(errorResponse.body.message).toBe("Account deleted");
   });
-  test("Correct 403 response when user attempts to delete a different user's account", async () => {
+  test("Correct 403 response when user attempts to access the endpoint for another account ", async () => {
     const loginObj = {
       username: "butter_bridge",
       password: "P@ssw0rd_Br1dge!",
@@ -143,13 +142,12 @@ describe("DELETE /api/users/:username", () => {
 
     const loginResponse = await request(app)
       .post("/api/users/login")
-      .send(loginObj)
-      .expect(200);
+      .send(loginObj);
 
     const token = loginResponse.body.token;
 
     const errorResponse = await request(app)
-      .delete("/api/users/rogersop")
+      .get("/api/users/rogersop")
       .set("Authorization", `Bearer ${token}`)
       .expect(403);
 

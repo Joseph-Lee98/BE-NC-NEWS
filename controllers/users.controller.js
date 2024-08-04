@@ -1,4 +1,9 @@
-const { createUser, verifyUser, removeUser } = require("../models/users.model");
+const {
+  createUser,
+  verifyUser,
+  removeUser,
+  fetchUser,
+} = require("../models/users.model");
 const jwt = require("jsonwebtoken");
 
 exports.registerUser = async (req, res, next) => {
@@ -103,6 +108,16 @@ exports.deleteUser = async (req, res, next) => {
   try {
     await removeUser(username);
     res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getUser = async (req, res, next) => {
+  const { username } = req.params;
+  try {
+    const userInformation = await fetchUser(username);
+    res.status(200).send(userInformation);
   } catch (error) {
     next(error);
   }
