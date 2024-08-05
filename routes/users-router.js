@@ -3,6 +3,7 @@ const {
   loginUser,
   deleteUser,
   getUser,
+  patchUser,
 } = require("../controllers/users.controller");
 const {
   preventLoggedInUser,
@@ -19,6 +20,7 @@ usersRouter.route("/login").post(preventLoggedInUser, loginUser);
 usersRouter
   .route("/:username")
   .delete(authenticateUser("user"), deleteUser)
-  .get(authenticateUserForUserInformation(), getUser);
+  .get(authenticateUserForUserInformation(), getUser)
+  .patch(authenticateUser("user"), patchUser);
 
 module.exports = usersRouter;

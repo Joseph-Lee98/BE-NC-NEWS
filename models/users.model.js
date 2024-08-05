@@ -118,3 +118,91 @@ exports.fetchUser = async (username) => {
 
   return fullUserInformation;
 };
+
+exports.updateUser = async (
+  currentUsername,
+  updatedUsername,
+  name,
+  password,
+  avatar_url,
+  is_private
+) => {
+  const client = await db.connect();
+  let updatedUser;
+
+  try {
+    await client.query("BEGIN");
+    if (updatedUsername) {
+      const usernameCheck = await client.query(
+        "SELECT username FROM users WHERE username = $1",
+        [updatedUsername]
+      );
+      if (usernameCheck.rowCount > 0) {
+        const error = new Error("Username already taken");
+        error.status = 409;
+        throw error;
+      }
+      // Update the username in the users table
+      const updatedUsernameResult = await client.query(
+        "UPDATE users SET username = $1 WHERE username = $2 RETURNING username,name,avatar_url,role",
+        [updatedUsername, currentUsername]
+      );
+
+      //     // Update the username in the comments table
+      await client.query("UPDATE comments SET author = $1 WHERE author = $2", [
+        updatedUsername,
+        currentUsername,
+      ]);
+
+      //     // Update the username in the articles table
+      await client.query("UPDATE articles SET author = $1 WHERE author = $2", [
+        updatedUsername,
+        currentUsername,
+      ]);
+      currentUsername = updatedUsername;
+      updatedUser = updatedUsernameResult.rows[0];
+    }
+    // Start building the update statement
+    const updateFields = [];
+    const values = [];
+
+    // Conditionally add fields to update
+    if (name !== undefined) {
+      updateFields.push("name = $1");
+      values.push(name);
+    }
+    if (password !== undefined) {
+      updateFields.push("password = $" + (values.length + 1));
+      const hashedPassword = await hashPassword(password);
+      values.push(hashedPassword);
+    }
+    if (avatar_url !== undefined) {
+      updateFields.push("avatar_url = $" + (values.length + 1));
+      values.push(avatar_url);
+    }
+    if (is_private !== undefined) {
+      updateFields.push("is_private = $" + (values.length + 1));
+      values.push(is_private);
+    }
+
+    // If there are fields to update, construct and execute the update query
+    if (updateFields.length > 0) {
+      const queryStr = `UPDATE users SET ${updateFields.join(
+        ", "
+      )} WHERE username = $${
+        values.length + 1
+      } RETURNING username,name,role,avatar_url`;
+      values.push(currentUsername); // Add the current username for the WHERE clause
+
+      const updatedUserResult = await client.query(queryStr, values);
+      updatedUser = updatedUserResult.rows[0];
+    }
+    await client.query("COMMIT");
+    return updatedUser; // Return the updated user record
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+};

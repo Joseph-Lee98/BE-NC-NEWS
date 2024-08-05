@@ -29,30 +29,58 @@ exports.authenticateUser = (requiredRole) => {
       const user = userDeletedResult.rows[0];
 
       if (!user) {
+        // console.log("User not found");
         return res.status(401).json({ message: "User not found" });
       }
 
       if (user.deleted_at) {
+        // console.log("Account deleted");
         return res.status(403).json({ message: "Account deleted" });
       }
 
       // Check if the user has the required role
       if (!rolesHierarchy[requiredRole].includes(decoded.role)) {
+        // console.log("Forbidden due to role");
         return res.status(403).json({ message: "Forbidden" });
       }
 
       // Check if the route has a username parameter and match it
       const { username } = req.params;
+
+      let isUserPresent;
+
+      if (username) {
+        isUserPresent = await db.query(
+          "SELECT * FROM users WHERE username = $1",
+          [username]
+        );
+      }
+
+      if (decoded.role === "admin" && username && !isUserPresent.rowCount) {
+        return res.status(401).send({ message: "User not found" });
+      }
+
+      if (
+        decoded.role === "admin" &&
+        username &&
+        isUserPresent.rows[0]?.deleted_at
+      ) {
+        return res.status(401).send({ message: "Account deleted" });
+      }
+
       if (
         username &&
         username !== decoded.username &&
         decoded.role !== "admin"
       ) {
+        // console.log("Forbidden due to username mismatch");
         return res.status(403).json({ message: "Forbidden" });
       }
 
+      // console.log("Middleware passing");
       next();
     } catch (error) {
+      // console.error("Authentication error:", error);
       res.status(401).json({ message: "Invalid token" });
     }
   };
