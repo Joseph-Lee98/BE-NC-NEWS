@@ -143,5 +143,47 @@
       "avatar_url": "https://static1.srcdn.com/wordpress/wp-content/uploads/2021/03/William-Shatner-as-Admiral-Kirk-in-The-Wrath-of-Khan.jpg",
       "role": "user"
     }
+  },
+  "GET /api/users": {
+    "description": "allows the admin to view details on all users",
+    "queries": [],
+    "example response": [
+      {
+        "username": "butter_bridge",
+        "name": "jonny",
+        "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        "is_private": false,
+        "deleted_at": null,
+        "comment_count": 5,
+        "article_count": 4
+      },
+      {
+        "username": "icellusedkars",
+        "name": "sam",
+        "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4",
+        "is_private": false,
+        "deleted_at": null,
+        "comment_count": 13,
+        "article_count": 6
+      },
+      {
+        "username": "lurker",
+        "name": "do_nothing",
+        "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+        "is_private": false,
+        "deleted_at": null,
+        "comment_count": 0,
+        "article_count": 0
+      },
+      {
+        "username": "rogersop",
+        "name": "paul",
+        "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
+        "is_private": true,
+        "deleted_at": null,
+        "comment_count": 0,
+        "article_count": 3
+      }
+    ]
   }
 }
