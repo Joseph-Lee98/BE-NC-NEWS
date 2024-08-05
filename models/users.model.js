@@ -206,3 +206,18 @@ exports.updateUser = async (
     client.release();
   }
 };
+
+exports.fetchUsers = async () => {
+  const result = await db.query(`
+    SELECT users.username AS username,users.name AS name,users.avatar_url AS avatar_url,users.is_private AS is_private,users.deleted_at AS deleted_at,COALESCE(COUNT(DISTINCT comments.comment_id), 0) AS comment_count,
+    COALESCE(COUNT(DISTINCT articles.article_id), 0) AS article_count FROM users LEFT JOIN comments ON users.username = comments.author LEFT JOIN articles ON users.username = articles.author WHERE users.role = 'user' GROUP BY username,name,avatar_url,is_private,deleted_at
+    `);
+
+  const formattedRows = result.rows.map((row) => ({
+    ...row,
+    comment_count: Number(row.comment_count),
+    article_count: Number(row.article_count),
+  }));
+
+  return formattedRows;
+};

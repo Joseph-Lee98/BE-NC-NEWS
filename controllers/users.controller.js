@@ -4,6 +4,7 @@ const {
   removeUser,
   fetchUser,
   updateUser,
+  fetchUsers,
 } = require("../models/users.model");
 const jwt = require("jsonwebtoken");
 
@@ -216,6 +217,16 @@ exports.patchUser = async (req, res, next) => {
     );
     res.status(200).send(updatedUser);
   } catch (error) {
+    next(error);
+  }
+};
+
+exports.getUsers = async (req, res, next) => {
+  try {
+    const usersInformation = await fetchUsers();
+    res.status(200).send(usersInformation);
+  } catch (error) {
+    console.error(error);
     next(error);
   }
 };
