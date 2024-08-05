@@ -4,6 +4,7 @@ const {
   deleteUser,
   getUser,
   patchUser,
+  getUsers,
 } = require("../controllers/users.controller");
 const {
   preventLoggedInUser,
@@ -13,7 +14,10 @@ const {
 
 const usersRouter = require("express").Router();
 
-usersRouter.route("/").post(preventLoggedInUser, registerUser);
+usersRouter
+  .route("/")
+  .post(preventLoggedInUser, registerUser)
+  .get(authenticateUser("admin"), getUsers);
 
 usersRouter.route("/login").post(preventLoggedInUser, loginUser);
 
