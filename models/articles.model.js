@@ -9,14 +9,14 @@ exports.fetchArticles = async ({ topic, sort_by, order_by }) => {
     articlesQueryStr += ` WHERE topic = $1`;
     queryParams.push(topic);
   }
-  articlesQueryStr += ` GROUP BY 
-    articles.article_id, 
-    title, 
-    topic, 
-    articles.author, 
-    articles.created_at, 
-    articles.votes, 
-    article_img_url`;
+  articlesQueryStr += ` GROUP BY
+   articles.article_id,
+   title,
+   topic,
+   articles.author,
+   articles.created_at,
+   articles.votes,
+   article_img_url`;
 
   if (sort_by && order_by) {
     articlesQueryStr += ` ORDER BY ${sort_by} ${order_by}`;
@@ -51,4 +51,18 @@ exports.fetchArticleById = async (article_id) => {
     comment_count: Number(comment_count),
   };
   return formattedArticleResult;
+};
+
+exports.createArticle = async (title, body, topic, article_img_url, author) => {
+  const queryParams = [title, body, topic, author];
+  let columnNames = "title,body,topic,author";
+  if (article_img_url !== undefined) {
+    queryParams.push(article_img_url);
+    columnNames += ",article_img_url";
+  }
+  const queryStr = `INSERT INTO articles (${columnNames}) VALUES ($1,$2,$3,$4${
+    queryParams.length === 5 ? ",$5" : ""
+  }) RETURNING *`;
+  const postedArticle = await db.query(queryStr, queryParams);
+  return postedArticle.rows[0];
 };

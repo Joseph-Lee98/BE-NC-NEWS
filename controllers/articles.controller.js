@@ -1,4 +1,8 @@
-const { fetchArticles, fetchArticleById } = require("../models/articles.model");
+const {
+  fetchArticles,
+  fetchArticleById,
+  createArticle,
+} = require("../models/articles.model");
 const { fetchTopics } = require("../models/topics.model");
 
 exports.getArticles = async (req, res, next) => {
@@ -57,6 +61,67 @@ exports.getArticleById = async (req, res, next) => {
   try {
     const article = await fetchArticleById(formattedArticle_id);
     res.status(200).send(article);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.postArticle = async (req, res, next) => {
+  const { title, body, topic, article_img_url } = req.body;
+  const { username } = req.user;
+  if (title === undefined || topic === undefined || body === undefined)
+    return res
+      .status(400)
+      .send({ message: "Title, body and topic are required" });
+
+  if (typeof title !== "string")
+    return res.status(400).send({ message: "Title must be in a valid format" });
+  if (title.length === 0 || title.trim().length === 0)
+    return res.status(400).send({ message: "Title must not be empty text" });
+  if (title.length > 200)
+    return res.status(400).send({
+      message: "Title must not be greater than 200 characters in length",
+    });
+
+  if (typeof body !== "string")
+    return res
+      .status(400)
+      .send({ message: "Article body must be in a valid format" });
+  if (body.length === 0 || body.trim().length === 0)
+    return res
+      .status(400)
+      .send({ message: "Article body must not be empty text" });
+  if (body.length > 5000)
+    return res.status(400).send({
+      message:
+        "Article body must not be greater than 5000 characters in length",
+    });
+
+  if (article_img_url !== undefined) {
+    if (typeof article_img_url !== "string")
+      return res
+        .status(400)
+        .send({ message: "URL to article image must be in a valid format" });
+    if (article_img_url.length === 0 || article_img_url.trim().length === 0)
+      return res
+        .status(400)
+        .send({ message: "URL to article image must not be empty text" });
+  }
+
+  try {
+    const topics = await fetchTopics();
+    const topicSlugs = topics.map((topic) => topic.slug);
+    if (!topicSlugs.includes(topic))
+      return res.status(400).send({ message: "Topic must be a valid topic" });
+
+    const postedArticle = await createArticle(
+      title,
+      body,
+      topic,
+      article_img_url,
+      username
+    );
+    return res.status(201).send(postedArticle);
   } catch (error) {
     next(error);
   }
