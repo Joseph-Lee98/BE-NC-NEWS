@@ -31,3 +31,24 @@ exports.fetchArticles = async ({ topic, sort_by, order_by }) => {
 
   return formattedRows;
 };
+
+exports.fetchArticleById = async (article_id) => {
+  const queryStr =
+    "SELECT articles.article_id,articles.body,title,topic,articles.author,articles.created_at,articles.votes,article_img_url,COUNT(comments.article_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id, title, topic, articles.author, articles.created_at, articles.votes, articles.body, article_img_url";
+  const queryParams = [article_id];
+
+  const articleResult = await db.query(queryStr, queryParams);
+  if (!articleResult.rowCount) {
+    const error = new Error("Article not found");
+    error.status = 404;
+    throw error;
+  }
+
+  const { comment_count, ...rest } = articleResult.rows[0];
+
+  const formattedArticleResult = {
+    ...rest,
+    comment_count: Number(comment_count),
+  };
+  return formattedArticleResult;
+};

@@ -1,4 +1,4 @@
-const { fetchArticles } = require("../models/articles.model");
+const { fetchArticles, fetchArticleById } = require("../models/articles.model");
 const { fetchTopics } = require("../models/topics.model");
 
 exports.getArticles = async (req, res, next) => {
@@ -38,6 +38,25 @@ exports.getArticles = async (req, res, next) => {
   try {
     const articles = await fetchArticles(req.query);
     res.status(200).send(articles);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getArticleById = async (req, res, next) => {
+  const { article_id } = req.params;
+
+  const formattedArticle_id = Number(article_id);
+
+  if (!Number.isInteger(formattedArticle_id) || formattedArticle_id < 1) {
+    return res
+      .status(400)
+      .send({ message: "article_id must be a valid, positive integer" });
+  }
+
+  try {
+    const article = await fetchArticleById(formattedArticle_id);
+    res.status(200).send(article);
   } catch (error) {
     next(error);
   }
