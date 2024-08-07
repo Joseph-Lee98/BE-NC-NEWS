@@ -16,47 +16,47 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
     await db.query(`DROP TABLE IF EXISTS topics;`);
 
     await db.query(`
-      CREATE TABLE topics (
-        slug VARCHAR PRIMARY KEY,
-        description VARCHAR
-      );
-    `);
+     CREATE TABLE topics (
+       slug VARCHAR PRIMARY KEY,
+       description VARCHAR
+     );
+   `);
 
     await db.query(`
-      CREATE TABLE users (
-        username VARCHAR(20) PRIMARY KEY,
-        name VARCHAR(30) NOT NULL,
-        avatar_url VARCHAR,
-        password VARCHAR NOT NULL,
-        role VARCHAR(10) DEFAULT 'user',
-        deleted_at TIMESTAMP NULL,
-        is_private BOOLEAN DEFAULT false
-      );
-    `);
+     CREATE TABLE users (
+       username VARCHAR(20) PRIMARY KEY,
+       name VARCHAR(30) NOT NULL,
+       avatar_url VARCHAR,
+       password VARCHAR NOT NULL,
+       role VARCHAR(10) DEFAULT 'user',
+       deleted_at TIMESTAMP NULL,
+       is_private BOOLEAN DEFAULT false
+     );
+   `);
 
     await db.query(`
-      CREATE TABLE articles (
-        article_id SERIAL PRIMARY KEY,
-        title VARCHAR NOT NULL,
-        topic VARCHAR NOT NULL REFERENCES topics(slug),
-        author VARCHAR(20),
-        body VARCHAR NOT NULL,
-        created_at TIMESTAMP DEFAULT NOW(),
-        votes INT DEFAULT 0 NOT NULL,
-        article_img_url VARCHAR DEFAULT 'https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700'
-      );
-    `);
+     CREATE TABLE articles (
+       article_id SERIAL PRIMARY KEY,
+       title VARCHAR(200) NOT NULL,
+       topic VARCHAR NOT NULL REFERENCES topics(slug),
+       author VARCHAR(20),
+       body VARCHAR(5000) NOT NULL,
+       created_at TIMESTAMP DEFAULT NOW(),
+       votes INT DEFAULT 0 NOT NULL,
+       article_img_url VARCHAR DEFAULT 'https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700'
+     );
+   `);
 
     await db.query(`
-      CREATE TABLE comments (
-        comment_id SERIAL PRIMARY KEY,
-        body VARCHAR NOT NULL,
-        article_id INT REFERENCES articles(article_id) NOT NULL,
-        author VARCHAR(20),
-        votes INT DEFAULT 0 NOT NULL,
-        created_at TIMESTAMP DEFAULT NOW()
-      );
-    `);
+     CREATE TABLE comments (
+       comment_id SERIAL PRIMARY KEY,
+       body VARCHAR NOT NULL,
+       article_id INT REFERENCES articles(article_id) NOT NULL,
+       author VARCHAR(20),
+       votes INT DEFAULT 0 NOT NULL,
+       created_at TIMESTAMP DEFAULT NOW()
+     );
+   `);
 
     const hashedUserData = await hashPasswords(userData);
     const hashedAdminPassword = await hashPassword(process.env.ADMIN_PASSWORD);
