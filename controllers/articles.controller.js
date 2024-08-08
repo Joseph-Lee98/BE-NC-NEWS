@@ -2,6 +2,7 @@ const {
   fetchArticles,
   fetchArticleById,
   createArticle,
+  updateArticleById,
 } = require("../models/articles.model");
 const { fetchTopics } = require("../models/topics.model");
 
@@ -122,6 +123,33 @@ exports.postArticle = async (req, res, next) => {
       username
     );
     return res.status(201).send(postedArticle);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.patchArticleById = async (req, res, next) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+
+  const formattedArticle_id = Number(article_id);
+
+  if (inc_votes === undefined)
+    return res.status(400).send({ message: "Inc_votes is required" });
+
+  if (!Number.isInteger(formattedArticle_id) || formattedArticle_id < 1) {
+    return res
+      .status(400)
+      .send({ message: "article_id must be a valid, positive integer" });
+  }
+
+  if (inc_votes !== 1 && inc_votes !== -1)
+    return res.status(400).send({ message: "inc_votes must be +1 or -1" });
+  try {
+    const article = await fetchArticleById(formattedArticle_id);
+    const new_votes = article.votes + inc_votes;
+    const updatedArticle = await updateArticleById(article_id, new_votes);
+    return res.status(200).send(updatedArticle);
   } catch (error) {
     next(error);
   }

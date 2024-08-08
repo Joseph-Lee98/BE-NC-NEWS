@@ -66,3 +66,11 @@ exports.createArticle = async (title, body, topic, article_img_url, author) => {
   const postedArticle = await db.query(queryStr, queryParams);
   return postedArticle.rows[0];
 };
+
+exports.updateArticleById = async (article_id, new_votes) => {
+  const queryParams = [new_votes, article_id];
+  const queryStr =
+    "UPDATE articles SET votes = $1 WHERE article_id = $2 RETURNING *";
+  const updatedArticleResult = await db.query(queryStr, queryParams);
+  return updatedArticleResult.rows[0];
+};
