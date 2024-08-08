@@ -74,3 +74,10 @@ exports.updateArticleById = async (article_id, new_votes) => {
   const updatedArticleResult = await db.query(queryStr, queryParams);
   return updatedArticleResult.rows[0];
 };
+
+exports.removeArticleById = async (article_id) => {
+  const queryParams = [article_id];
+  const queryStr = "DELETE FROM articles WHERE article_id = $1";
+  const deletedArticle = await db.query(queryStr, queryParams);
+  return deletedArticle.rowCount > 0;
+};

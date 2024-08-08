@@ -3,6 +3,7 @@ const {
   getArticleById,
   postArticle,
   patchArticleById,
+  deleteArticleById,
 } = require("../controllers/articles.controller");
 
 const { authenticateUser } = require("../middleware/auth");
@@ -17,6 +18,7 @@ articlesRouter
 articlesRouter
   .route("/:article_id")
   .get(getArticleById)
-  .patch(authenticateUser("user"), patchArticleById);
+  .patch(authenticateUser("user"), patchArticleById)
+  .delete(authenticateUser("user"), deleteArticleById);
 
 module.exports = articlesRouter;

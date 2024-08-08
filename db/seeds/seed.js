@@ -51,10 +51,11 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
      CREATE TABLE comments (
        comment_id SERIAL PRIMARY KEY,
        body VARCHAR NOT NULL,
-       article_id INT REFERENCES articles(article_id) NOT NULL,
+       article_id INT NOT NULL,
        author VARCHAR(20),
        votes INT DEFAULT 0 NOT NULL,
-       created_at TIMESTAMP DEFAULT NOW()
+       created_at TIMESTAMP DEFAULT NOW(),
+       FOREIGN KEY (article_id) REFERENCES articles(article_id) ON DELETE CASCADE
      );
    `);
 
