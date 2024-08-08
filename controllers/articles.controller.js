@@ -147,8 +147,6 @@ exports.patchArticleById = async (req, res, next) => {
     return res.status(400).send({ message: "inc_votes must be +1 or -1" });
   try {
     const article = await fetchArticleById(formattedArticle_id);
-    if (article.author !== req.user.username && req.user.role !== "admin")
-      return res.status(403).send({ message: "Forbidden" });
     const new_votes = article.votes + inc_votes;
     const updatedArticle = await updateArticleById(article_id, new_votes);
     return res.status(200).send(updatedArticle);
