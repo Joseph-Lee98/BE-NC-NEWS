@@ -3,6 +3,7 @@ const {
   fetchArticleById,
   createArticle,
   updateArticleById,
+  removeArticleById,
 } = require("../models/articles.model");
 const { fetchTopics } = require("../models/topics.model");
 
@@ -148,8 +149,35 @@ exports.patchArticleById = async (req, res, next) => {
   try {
     const article = await fetchArticleById(formattedArticle_id);
     const new_votes = article.votes + inc_votes;
-    const updatedArticle = await updateArticleById(article_id, new_votes);
+    const updatedArticle = await updateArticleById(
+      formattedArticle_id,
+      new_votes
+    );
     return res.status(200).send(updatedArticle);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deleteArticleById = async (req, res, next) => {
+  const { article_id } = req.params;
+  const formattedArticle_id = Number(article_id);
+  if (!Number.isInteger(formattedArticle_id) || formattedArticle_id < 1) {
+    return res
+      .status(400)
+      .send({ message: "article_id must be a valid, positive integer" });
+  }
+  try {
+    const selectedArticle = await fetchArticleById(formattedArticle_id);
+    if (
+      selectedArticle.author !== req.user.username &&
+      req.user.role !== "admin"
+    )
+      return res.status(403).send({ message: "Forbidden" });
+    const isArticleDeleted = await removeArticleById(formattedArticle_id);
+    return isArticleDeleted
+      ? res.status(204).send()
+      : res.status(404).send({ message: "Article not found" });
   } catch (error) {
     next(error);
   }
