@@ -2,6 +2,7 @@ const {
   getArticles,
   getArticleById,
   postArticle,
+  patchArticleById,
 } = require("../controllers/articles.controller");
 
 const { authenticateUser } = require("../middleware/auth");
@@ -13,6 +14,9 @@ articlesRouter
   .get(getArticles)
   .post(authenticateUser("user"), postArticle);
 
-articlesRouter.route("/:article_id").get(getArticleById);
+articlesRouter
+  .route("/:article_id")
+  .get(getArticleById)
+  .patch(authenticateUser("user"), patchArticleById);
 
 module.exports = articlesRouter;
