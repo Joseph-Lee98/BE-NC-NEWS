@@ -5,6 +5,7 @@ const {
   patchArticleById,
   deleteArticleById,
   getCommentsByArticleId,
+  postCommentByArticleId,
 } = require("../controllers/articles.controller");
 
 const { authenticateUser } = require("../middleware/auth");
@@ -22,6 +23,9 @@ articlesRouter
   .patch(authenticateUser("user"), patchArticleById)
   .delete(authenticateUser("user"), deleteArticleById);
 
-articlesRouter.route("/:article_id/comments").get(getCommentsByArticleId);
+articlesRouter
+  .route("/:article_id/comments")
+  .get(getCommentsByArticleId)
+  .post(authenticateUser("user"), postCommentByArticleId);
 
 module.exports = articlesRouter;
