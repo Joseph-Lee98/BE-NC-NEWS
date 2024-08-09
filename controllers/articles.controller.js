@@ -4,6 +4,7 @@ const {
   createArticle,
   updateArticleById,
   removeArticleById,
+  fetchCommentsByArticleId,
 } = require("../models/articles.model");
 const { fetchTopics } = require("../models/topics.model");
 
@@ -178,6 +179,23 @@ exports.deleteArticleById = async (req, res, next) => {
     return isArticleDeleted
       ? res.status(204).send()
       : res.status(404).send({ message: "Article not found" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getCommentsByArticleId = async (req, res, next) => {
+  const { article_id } = req.params;
+  const formattedArticle_id = Number(article_id);
+  if (!Number.isInteger(formattedArticle_id) || formattedArticle_id < 1) {
+    return res
+      .status(400)
+      .send({ message: "article_id must be a valid, positive integer" });
+  }
+  try {
+    await fetchArticleById(formattedArticle_id);
+    const comments = await fetchCommentsByArticleId(formattedArticle_id);
+    return res.status(200).send(comments);
   } catch (error) {
     next(error);
   }
