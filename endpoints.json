@@ -283,5 +283,20 @@
         "created_at": "2020-10-11T15:23:00.000Z"
       }
     ]
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "allows the user to create a comment for an article",
+    "example request body": {
+      "body": "Having run out of ideas for articles, I am staring at the wall blankly, like a cat. Does this make me a cat?"
+    },
+    "queries": [],
+    "example response": {
+      "comment_id": 16,
+      "article_id": 11,
+      "author": "icellusedkars",
+      "created_at": "2020-01-15T22:21:00.000Z",
+      "body": "Having run out of ideas for articles, I am staring at the wall blankly, like a cat. Does this make me a cat?",
+      "votes": 0
+    }
   }
 }
