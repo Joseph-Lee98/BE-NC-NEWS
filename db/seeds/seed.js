@@ -50,7 +50,7 @@ const seed = async ({ topicData, userData, articleData, commentData }) => {
     await db.query(`
      CREATE TABLE comments (
        comment_id SERIAL PRIMARY KEY,
-       body VARCHAR NOT NULL,
+       body VARCHAR(1000) NOT NULL,
        article_id INT NOT NULL,
        author VARCHAR(20),
        votes INT DEFAULT 0 NOT NULL,

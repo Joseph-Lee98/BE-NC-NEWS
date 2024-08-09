@@ -89,3 +89,11 @@ exports.fetchCommentsByArticleId = async (article_id) => {
   const comments = await db.query(queryStr, queryParams);
   return comments.rows;
 };
+
+exports.createCommentByArticleId = async (article_id, username, body) => {
+  const queryParams = [article_id, username, body];
+  const queryStr =
+    "INSERT INTO comments (article_id,author,body) VALUES ($1,$2,$3) RETURNING *";
+  const postedComment = await db.query(queryStr, queryParams);
+  return postedComment.rows[0];
+};

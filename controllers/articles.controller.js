@@ -5,6 +5,7 @@ const {
   updateArticleById,
   removeArticleById,
   fetchCommentsByArticleId,
+  createCommentByArticleId,
 } = require("../models/articles.model");
 const { fetchTopics } = require("../models/topics.model");
 
@@ -196,6 +197,44 @@ exports.getCommentsByArticleId = async (req, res, next) => {
     await fetchArticleById(formattedArticle_id);
     const comments = await fetchCommentsByArticleId(formattedArticle_id);
     return res.status(200).send(comments);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.postCommentByArticleId = async (req, res, next) => {
+  const { article_id } = req.params;
+  const { body } = req.body;
+  const formattedArticle_id = Number(article_id);
+  if (!Number.isInteger(formattedArticle_id) || formattedArticle_id < 1) {
+    return res
+      .status(400)
+      .send({ message: "article_id must be a valid, positive integer" });
+  }
+  if (body === undefined)
+    return res.status(400).send({ message: "Comment body is required" });
+  if (typeof body !== "string")
+    return res
+      .status(400)
+      .send({ message: "Comment body must be in a valid format" });
+  if (body.length === 0 || body.trim().length === 0)
+    return res
+      .status(400)
+      .send({ message: "Comment body must not be empty text" });
+  if (body.length > 1000)
+    return res.status(400).send({
+      message:
+        "Comment body must not be greater than 1000 characters in length",
+    });
+
+  try {
+    await fetchArticleById(formattedArticle_id);
+    const postedComment = await createCommentByArticleId(
+      formattedArticle_id,
+      req.user.username,
+      body
+    );
+    res.status(201).send(postedComment);
   } catch (error) {
     next(error);
   }
