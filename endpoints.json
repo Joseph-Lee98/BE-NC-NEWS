@@ -298,5 +298,9 @@
       "body": "Having run out of ideas for articles, I am staring at the wall blankly, like a cat. Does this make me a cat?",
       "votes": 0
     }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "allows the user to delete a comment they created",
+    "queries": []
   }
 }
