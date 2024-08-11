@@ -22,3 +22,19 @@ exports.removeCommentByCommentId = async (comment_id, author) => {
   const deleteCommentQueryStr = "DELETE FROM comments WHERE comment_id = $1";
   await db.query(deleteCommentQueryStr, deleteCommentQueryParams);
 };
+
+exports.updateCommentByCommentId = async (comment_id, inc_votes) => {
+  const updateCommentParams = [inc_votes, comment_id];
+  const updateCommentQueryStr =
+    "UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *";
+  const updatedCommentResult = await db.query(
+    updateCommentQueryStr,
+    updateCommentParams
+  );
+  if (!updatedCommentResult.rowCount) {
+    const error = new Error("Comment not found");
+    error.status = 404;
+    throw error;
+  }
+  return updatedCommentResult.rows[0];
+};
