@@ -23,7 +23,7 @@
             "created_at": "2020-01-15T22:21:00.000Z",
             "votes": 0,
             "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-            "comment_count": "0"
+            "comment_count": 0
           }
         ]
       }
@@ -84,7 +84,8 @@
           "body": "Have you seen the size of that thing?",
           "created_at": "2020-10-11T11:24:00.000Z",
           "votes": 0,
-          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "article_id": 1
         },
         {
           "title": "Another article about Mitch",
@@ -93,11 +94,14 @@
           "body": "There will never be enough articles about Mitch!",
           "created_at": "2020-10-11T11:24:00.000Z",
           "votes": 0,
-          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "article_id": 2
         }
       ],
       "commentsByUser": [
         {
+          "comment_id": 1,
+          "article_id": 1,
           "comment_body": "I am 100% sure that we're not completely sure.",
           "comment_author": "butter_bridge",
           "comment_votes": 1,
@@ -110,6 +114,8 @@
           "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         },
         {
+          "comment_id": 2,
+          "article_id": 3,
           "comment_body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
           "comment_author": "butter_bridge",
           "comment_votes": 14,

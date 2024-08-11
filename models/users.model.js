@@ -85,14 +85,14 @@ exports.fetchUser = async (username) => {
   fullUserInformation.userInformation = userInformation.rows[0];
 
   const articlesByUser = await db.query(
-    "SELECT title,topic,author,body,created_at,votes,article_img_url FROM articles WHERE author = $1 ORDER BY created_at DESC",
+    "SELECT article_id,title,topic,author,body,created_at,votes,article_img_url FROM articles WHERE author = $1 ORDER BY created_at DESC",
     [username]
   );
 
   fullUserInformation.articlesByUser = articlesByUser.rows;
 
   const commentsByUser = await db.query(
-    "SELECT comments.body AS comment_body,comments.author AS comment_author,comments.votes AS comment_votes,comments.created_at AS comment_created_at,articles.title AS article_title,articles.topic AS article_topic,articles.body AS article_body,articles.created_at AS articles_created_at,articles.votes AS article_votes,articles.article_img_url FROM comments JOIN articles ON articles.article_id = comments.article_id WHERE comments.author = $1 ORDER BY comments.created_at DESC",
+    "SELECT comment_id,articles.article_id,comments.body AS comment_body,comments.author AS comment_author,comments.votes AS comment_votes,comments.created_at AS comment_created_at,articles.title AS article_title,articles.topic AS article_topic,articles.body AS article_body,articles.created_at AS articles_created_at,articles.votes AS article_votes,articles.article_img_url FROM comments JOIN articles ON articles.article_id = comments.article_id WHERE comments.author = $1 ORDER BY comments.created_at DESC",
     [username]
   );
 
