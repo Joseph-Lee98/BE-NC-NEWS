@@ -217,7 +217,7 @@
       }
     ]
   },
-  "GET /api/articles/11": {
+  "GET /api/articles/:article_id": {
     "description": "serves the correct article object",
     "queries": [],
     "exampleResponse": {
