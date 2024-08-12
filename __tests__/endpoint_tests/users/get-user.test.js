@@ -40,6 +40,7 @@ describe("GET /api/users/:username", () => {
         });
 
         const expectedArticleStructure = {
+          article_id: expect.any(Number),
           title: expect.any(String),
           topic: expect.any(String),
           author: "butter_bridge",
@@ -61,6 +62,8 @@ describe("GET /api/users/:username", () => {
         });
 
         const expectedCommentStructure = {
+          comment_id: expect.any(Number),
+          article_id: expect.any(Number),
           comment_body: expect.any(String),
           comment_author: "butter_bridge",
           comment_votes: expect.any(Number),
@@ -115,6 +118,7 @@ describe("GET /api/users/:username", () => {
         });
 
         const expectedArticleStructure = {
+          article_id: expect.any(Number),
           title: expect.any(String),
           topic: expect.any(String),
           author: "butter_bridge",
@@ -136,6 +140,8 @@ describe("GET /api/users/:username", () => {
         });
 
         const expectedCommentStructure = {
+          comment_id: expect.any(Number),
+          article_id: expect.any(Number),
           comment_body: expect.any(String),
           comment_author: "butter_bridge",
           comment_votes: expect.any(Number),
@@ -194,6 +200,7 @@ describe("GET /api/users/:username", () => {
         });
 
         const expectedArticleStructure = {
+          article_id: expect.any(Number),
           title: expect.any(String),
           topic: expect.any(String),
           author: "butter_bridge",
@@ -215,6 +222,8 @@ describe("GET /api/users/:username", () => {
         });
 
         const expectedCommentStructure = {
+          comment_id: expect.any(Number),
+          article_id: expect.any(Number),
           comment_body: expect.any(String),
           comment_author: "butter_bridge",
           comment_votes: expect.any(Number),
@@ -262,48 +271,7 @@ describe("GET /api/users/:username", () => {
 
         expect(body.articlesByUser).toHaveLength(0);
 
-        // expect(body.articlesByUser).toBeSortedBy("created_at", {
-        //   descending: true,
-        // });
-
-        // const expectedArticleStructure = {
-        //   title: expect.any(String),
-        //   topic: expect.any(String),
-        //   author: "butter_bridge",
-        //   body: expect.any(String),
-        //   created_at: expect.any(String),
-        //   article_img_url: expect.any(String),
-        //   votes: expect.any(Number),
-        // };
-
-        // Ensure each object has the correct keys
-        // body.articlesByUser.forEach((article) => {
-        //   expect(article).toMatchObject(expectedArticleStructure);
-        // });
-
         expect(body.commentsByUser).toHaveLength(0);
-
-        // expect(body.commentsByUser).toBeSortedBy("comment_created_at", {
-        //   descending: true,
-        // });
-
-        // const expectedCommentStructure = {
-        //   comment_body: expect.any(String),
-        //   comment_author: "butter_bridge",
-        //   comment_votes: expect.any(Number),
-        //   comment_created_at: expect.any(String),
-        //   article_title: expect.any(String),
-        //   article_topic: expect.any(String),
-        //   article_body: expect.any(String),
-        //   articles_created_at: expect.any(String),
-        //   article_votes: expect.any(Number),
-        //   article_img_url: expect.any(String),
-        // };
-
-        // Ensure each object has the correct keys
-        // body.commentsByUser.forEach((comment) => {
-        //   expect(comment).toMatchObject(expectedCommentStructure);
-        // });
 
         expect(body.commentCount).toBe(0);
         expect(body.articleCount).toBe(0);
@@ -341,6 +309,7 @@ describe("GET /api/users/:username", () => {
         });
 
         const expectedArticleStructure = {
+          article_id: expect.any(Number),
           title: expect.any(String),
           topic: expect.any(String),
           author: "butter_bridge",
@@ -362,6 +331,8 @@ describe("GET /api/users/:username", () => {
         });
 
         const expectedCommentStructure = {
+          comment_id: expect.any(Number),
+          article_id: expect.any(Number),
           comment_body: expect.any(String),
           comment_author: "butter_bridge",
           comment_votes: expect.any(Number),
@@ -381,6 +352,43 @@ describe("GET /api/users/:username", () => {
 
         expect(body.commentCount).toBe(5);
         expect(body.articleCount).toBe(4);
+      });
+  });
+  test("200 status code and correct response object for admin getting a user's information when user has been deleted", async () => {
+    const loginObj = {
+      username: process.env.ADMIN_USERNAME,
+      password: process.env.ADMIN_PASSWORD,
+    };
+    const loginResponse = await request(app)
+      .post("/api/users/login")
+      .send(loginObj);
+
+    const token = loginResponse.body.token;
+
+    await request(app)
+      .delete("/api/users/butter_bridge")
+      .set("Authorization", `Bearer ${token}`);
+
+    await request(app)
+      .get("/api/users/butter_bridge")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(200)
+      .then(({ body }) => {
+        expect(Object.keys(body).length).toBe(5);
+        expect(body.userInformation).toEqual({
+          name: "jonny",
+          username: "butter_bridge",
+          role: "user",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        });
+
+        expect(body.articlesByUser).toHaveLength(0);
+
+        expect(body.commentsByUser).toHaveLength(0);
+
+        expect(body.commentCount).toBe(0);
+        expect(body.articleCount).toBe(0);
       });
   });
   test("200 status code and correct response object for admin getting a user's information if user is set to private", async () => {
@@ -418,6 +426,7 @@ describe("GET /api/users/:username", () => {
         });
 
         const expectedArticleStructure = {
+          article_id: expect.any(Number),
           title: expect.any(String),
           topic: expect.any(String),
           author: "butter_bridge",
@@ -439,6 +448,8 @@ describe("GET /api/users/:username", () => {
         });
 
         const expectedCommentStructure = {
+          comment_id: expect.any(Number),
+          article_id: expect.any(Number),
           comment_body: expect.any(String),
           comment_author: "butter_bridge",
           comment_votes: expect.any(Number),

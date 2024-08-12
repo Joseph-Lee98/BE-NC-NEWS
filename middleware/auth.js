@@ -29,12 +29,10 @@ exports.authenticateUser = (requiredRole) => {
       const user = userDeletedResult.rows[0];
 
       if (!user) {
-        // console.log("User not found");
         return res.status(401).json({ message: "User not found" });
       }
 
       if (user.deleted_at) {
-        // console.log("Account deleted");
         return res.status(403).json({ message: "Account deleted" });
       }
 
@@ -73,14 +71,11 @@ exports.authenticateUser = (requiredRole) => {
         username !== decoded.username &&
         decoded.role !== "admin"
       ) {
-        // console.log("Forbidden due to username mismatch");
         return res.status(403).json({ message: "Forbidden" });
       }
 
-      // console.log("Middleware passing");
       next();
     } catch (error) {
-      // console.error("Authentication error:", error);
       res.status(401).json({ message: "Invalid token" });
     }
   };
@@ -131,7 +126,7 @@ exports.authenticateUserForUserInformation = () => {
         return res.status(401).json({ message: "User not found" });
       }
 
-      if (queriedUser.deleted_at) {
+      if (queriedUser.deleted_at && decoded.role !== "admin") {
         return res.status(403).json({ message: "Account deleted" });
       }
 
