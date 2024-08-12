@@ -6,10 +6,12 @@
       "GET /api/topics": {
         "description": "serves an array of all topics",
         "queries": [],
-        "exampleResponse": {
-          "slug": "football",
-          "description": "Footie!"
-        }
+        "exampleResponse": [
+          {
+            "slug": "football",
+            "description": "Footie!"
+          }
+        ]
       },
       "GET /api/articles": {
         "description": "serves an array of all articles",
