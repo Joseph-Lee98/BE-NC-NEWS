@@ -46,7 +46,7 @@ describe("GET - /api", () => {
 
     expect(endpointsResult.body).toEqual(endpoints);
   });
-  test.only("Should return 200 status code and object documenting all endpoints, when called by admin", async () => {
+  test("Should return 200 status code and object documenting all endpoints, when called by admin", async () => {
     const loginObj = {
       username: process.env.ADMIN_USERNAME,
       password: process.env.ADMIN_PASSWORD,

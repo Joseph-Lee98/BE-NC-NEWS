@@ -134,6 +134,48 @@ describe("DELETE /api/users/:username", () => {
 
     expect(errorResponse.body.message).toBe("Account deleted");
   });
+  test("Correct 401 response when admin attempts to delete account of user that doesnt exist", async () => {
+    const loginObj = {
+      username: process.env.ADMIN_USERNAME,
+      password: process.env.ADMIN_PASSWORD,
+    };
+
+    const loginResponse = await request(app)
+      .post("/api/users/login")
+      .send(loginObj);
+
+    const token = loginResponse.body.token;
+
+    const errorResponse = await request(app)
+      .delete("/api/users/wrong_name")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(401);
+
+    expect(errorResponse.body.message).toBe("User not found");
+  });
+  test("Correct 401 response when admin attempts to delete account of user that is already deleted", async () => {
+    const loginObj = {
+      username: process.env.ADMIN_USERNAME,
+      password: process.env.ADMIN_PASSWORD,
+    };
+
+    const loginResponse = await request(app)
+      .post("/api/users/login")
+      .send(loginObj);
+
+    const token = loginResponse.body.token;
+
+    await request(app)
+      .delete("/api/users/butter_bridge")
+      .set("Authorization", `Bearer ${token}`);
+
+    const errorResponse = await request(app)
+      .delete("/api/users/butter_bridge")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(401);
+
+    expect(errorResponse.body.message).toBe("Account deleted");
+  });
   test("Correct 403 response when user attempts to access the endpoint for another account ", async () => {
     const loginObj = {
       username: "butter_bridge",

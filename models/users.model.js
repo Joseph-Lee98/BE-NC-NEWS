@@ -78,7 +78,7 @@ exports.fetchUser = async (username) => {
   const fullUserInformation = {};
 
   const userInformation = await db.query(
-    "SELECT username,name,avatar_url,role FROM users WHERE username = $1 AND deleted_at IS NULL",
+    "SELECT username,name,avatar_url,role FROM users WHERE username = $1",
     [username]
   );
 

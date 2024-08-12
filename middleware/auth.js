@@ -126,7 +126,7 @@ exports.authenticateUserForUserInformation = () => {
         return res.status(401).json({ message: "User not found" });
       }
 
-      if (queriedUser.deleted_at) {
+      if (queriedUser.deleted_at && decoded.role !== "admin") {
         return res.status(403).json({ message: "Account deleted" });
       }
 

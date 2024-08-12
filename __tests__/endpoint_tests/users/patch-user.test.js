@@ -605,7 +605,7 @@ describe("PATCH /api/users/:username", () => {
       "Request body must contain at least one of the following fields: username, name, password, avatar_url, is_private."
     );
   });
-  test("Correct 400 response when user attempts to access endpoint but request body is doesnt contain any of the required properties ", async () => {
+  test("Correct 400 response when user attempts to access endpoint but request body doesnt contain any of the required properties ", async () => {
     const loginObj = {
       username: "butter_bridge",
       password: "P@ssw0rd_Br1dge!",

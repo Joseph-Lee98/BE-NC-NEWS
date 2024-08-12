@@ -47,6 +47,23 @@ describe("POST /api/users", () => {
     const usersTable = await db.query("SELECT * FROM users");
     expect(usersTable.rows).toHaveLength(6);
   });
+  test("409 when registering with a username that belongs to an active user", async () => {
+    const registerObj = {
+      username: "butter_bridge",
+      name: "jonny",
+      avatar_url:
+        "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+      password: "P@ssw0rd_Br1dge!",
+    };
+
+    await request(app)
+      .post("/api/users")
+      .send(registerObj)
+      .expect(409)
+      .then(({ body }) => {
+        expect(body.message).toBe("Username already taken");
+      });
+  });
   test("409 when registering with a username that belongs to an inactive user", async () => {
     const loginObj = {
       username: "butter_bridge",
@@ -59,7 +76,7 @@ describe("POST /api/users", () => {
 
     const token = loginResponse.body.token;
 
-    const deleteUserResponse = await request(app)
+    await request(app)
       .delete("/api/users/butter_bridge")
       .set("Authorization", `Bearer ${token}`);
 

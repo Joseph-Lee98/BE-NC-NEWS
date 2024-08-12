@@ -354,6 +354,43 @@ describe("GET /api/users/:username", () => {
         expect(body.articleCount).toBe(4);
       });
   });
+  test("200 status code and correct response object for admin getting a user's information when user has been deleted", async () => {
+    const loginObj = {
+      username: process.env.ADMIN_USERNAME,
+      password: process.env.ADMIN_PASSWORD,
+    };
+    const loginResponse = await request(app)
+      .post("/api/users/login")
+      .send(loginObj);
+
+    const token = loginResponse.body.token;
+
+    await request(app)
+      .delete("/api/users/butter_bridge")
+      .set("Authorization", `Bearer ${token}`);
+
+    await request(app)
+      .get("/api/users/butter_bridge")
+      .set("Authorization", `Bearer ${token}`)
+      .expect(200)
+      .then(({ body }) => {
+        expect(Object.keys(body).length).toBe(5);
+        expect(body.userInformation).toEqual({
+          name: "jonny",
+          username: "butter_bridge",
+          role: "user",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        });
+
+        expect(body.articlesByUser).toHaveLength(0);
+
+        expect(body.commentsByUser).toHaveLength(0);
+
+        expect(body.commentCount).toBe(0);
+        expect(body.articleCount).toBe(0);
+      });
+  });
   test("200 status code and correct response object for admin getting a user's information if user is set to private", async () => {
     await db.query(
       "UPDATE users SET is_private = true WHERE username = 'butter_bridge'"
