@@ -9,7 +9,8 @@
     "prepare": "if [ \"$NODE_ENV\" != \"production\" ]; then husky install; fi",
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "node ./db/seeds/run-seed.js",
-    "start": "node listen.js"
+    "start": "node listen.js",
+    "seed-prod": "NODE_ENV=production npm run seed"
   },
   "keywords": [],
   "author": "",
