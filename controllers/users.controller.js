@@ -57,7 +57,7 @@ exports.registerUser = async (req, res, next) => {
     const token = jwt.sign(
       { username: user.username, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "5m" }
+      { expiresIn: "1h" }
     );
 
     res.status(201).send({
@@ -82,9 +82,6 @@ exports.loginUser = async (req, res, next) => {
       .send({ message: "Username and password are required" });
   }
   try {
-    console.log("Environment:", process.env.NODE_ENV); // Log the environment
-    console.log("JWT Secret:", process.env.JWT_SECRET); // Log the JWT secret being used
-
     const user = await verifyUser(username, password);
     if (!user) {
       return res.status(401).send({ message: "Invalid credentials" });
@@ -92,7 +89,7 @@ exports.loginUser = async (req, res, next) => {
     const token = jwt.sign(
       { username: user.username, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "5m" }
+      { expiresIn: "1h" }
     );
     res.status(200).send({
       user: {
@@ -104,7 +101,6 @@ exports.loginUser = async (req, res, next) => {
       token,
     });
   } catch (error) {
-    console.error("Error during login:", error);
     next(error);
   }
 };
@@ -230,7 +226,6 @@ exports.getUsers = async (req, res, next) => {
     const usersInformation = await fetchUsers();
     res.status(200).send(usersInformation);
   } catch (error) {
-    console.error(error);
     next(error);
   }
 };
