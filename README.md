@@ -4,6 +4,12 @@ Link to the location where the API is hosted below (/api endpoint provides a lis
 
 https://be-nc-news-q4om.onrender.com/api
 
+## Front-End Repository and Hosted Application
+
+This project is part of a full-stack application. The front-end is built using React and can be found in the following repository: https://github.com/Joseph-Lee98/FE-NC-NEWS
+
+The live application is hosted on Netlify and can be accessed here: https://joseph-nc-news.netlify.app/
+
 ## Summary
 
 Northcoders News API is a backend service designed to provide programmatic access to application data, similar to how services like Reddit expose their data. This project demonstrates the creation of a real-world backend service using Node.js, the Express.js framework, and PostgreSQL. The API allows for the retrieval and manipulation of news articles, comments, users, and other related data, providing a robust platform for a front-end application to interact with. 
