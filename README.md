@@ -59,14 +59,19 @@ You will need to create three .env files in the root directory: .env.development
 The below files should be stored in the root directory.
 
 .env.development:
+
 PGDATABASE=nc_news
+
 JWT_SECRET, ADMIN_USERNAME and ADMIN_PASSWORD assigned appropriate values.
 
 .env.test:
+
 PGDATABASE=nc_news_test
+
 JWT_SECRET, ADMIN_USERNAME and ADMIN_PASSWORD assigned appropriate values.
 
 .env.production:
+
 DATABASE_URL, JWT_SECRET, ADMIN_USERNAME and ADMIN_PASSWORD assigned appropriate values.
 
 ### Setting up local database
